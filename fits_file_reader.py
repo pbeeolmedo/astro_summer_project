@@ -14,9 +14,7 @@ loglam_values = []
 min_loglam = []
 max_loglam = []
 
-
-
-for i in range(numbertorun-1):
+for i in range(numbertorun):
     print(i)
     fname = glob.glob("/02_Data_Files/Spectra/*.fits")[i]
     table = Table.read(fname,hdu=1)
@@ -36,5 +34,3 @@ plt.plot([0,50],[np.mean(max_loglam),np.mean(max_loglam)])
 plt.show()
 '''
 print(np.mean(max_loglam))
-
-glob.glob("/Users/Pablo/OneDrive\ -\ UNSW/4th\ Year/Summer\ Physics\ /Research/02_Data_Files/Spectra")

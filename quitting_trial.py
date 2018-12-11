@@ -1,5 +1,8 @@
 import time
-for i in range(1):
-    time.sleep(1)
-    print(i)
-print(list(range(5)))
+a = []
+for i in range(6):
+    time.sleep(0.1)
+    print(i+77)
+    a.append(i)
+
+print(list(range(7)))
