@@ -28,8 +28,8 @@ for i in range(numbertorun):
 	plate_quality = Table.read(fname,hdu=2)['PLATEQUALITY'].data[0].strip().decode("utf-8")
 	subclass = Table.read(fname,hdu=2)['SUBCLASS'].data[0].strip().decode("utf-8")
 	loglam = hdu1["loglam"].data
-	flux = hdu1["flux"].data  
-	
+	flux = hdu1["flux"].data
+
 	if plate_quality == "good":
 		if np.min(loglam) <= lower_cutoff_loglam and np.max(loglam) >= upper_cutoff_loglam:
 			good_indices = np.where((loglam>lower_cutoff_loglam) & (loglam<upper_cutoff_loglam))
@@ -60,7 +60,7 @@ for i in range(numbertorun):
 			print("Bad wavelength Range")
 	else:
 		print(plate_quality)
-			
+
 
 X = np.array(loglam_values)
 y = np.array(subclasses)
@@ -82,7 +82,6 @@ def model():
 	c = Dense(1, activation='sigmoid')(b)
 	model=Model(inputs = [a], outputs = [c])
 	return model
-	
+
 model=model()
 model.summary()
-	
