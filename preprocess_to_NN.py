@@ -73,11 +73,12 @@ X_test = np.array(X_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
+X_test = X_train.reshape(X_test.shape[0], X_test.shape[1], 1)
 
 
 
 def model():
-	a = Input(shape=(3599))
+	a = Input(shape=(3599,1))
 	b = Dense(128, activation='relu')(a)
 	c = Dense(1, activation='sigmoid')(b)
 	model=Model(inputs = [a], outputs = [c])
