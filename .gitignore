@@ -1,1 +1,2 @@
-dir_to_ignore/"Users/Pablo/OneDrive\ -\ UNSW/4th\ Year/Summer\ Physics\ /Research/01_AstroProject_Main/Data_Files"
+#Ignore all the spectra and other data (too big to upload to GitHub)
+/Data_Files
