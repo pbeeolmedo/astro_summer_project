@@ -34,7 +34,7 @@ plt.plot([0,numbertorun],[np.mean(min_loglam),np.mean(min_loglam)])
 plt.plot([0,numbertorun],[np.mean(max_loglam),np.mean(max_loglam)])
 plt.show()
 '''
-
+print('jj')
 print(np.mean(min_loglam))
 print(np.mean(max_loglam))
 # Chose min = 3.59 and max = 3.95
