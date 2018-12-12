@@ -7,9 +7,13 @@ from scipy import constants as const
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Activation, Flatten, Input
+from keras import optimizers
+
 
 numbertorun = 15
-
+BATCH_SIZE = 32
+EPOCHS = 50
+LEARNING_RATE =0.001
 # t = Table.read(filename,hdu=1)
 # Initialise
 i = 0
@@ -68,12 +72,13 @@ print(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 print(X_train.shape)
 print(y_train.shape)
+print(X_test.shape)
 X_train = np.array(X_train)
 X_test = np.array(X_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
-X_test = X_train.reshape(X_test.shape[0], X_test.shape[1], 1)
+X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
 
 
 
@@ -86,4 +91,6 @@ def model():
 	
 model=model()
 model.summary()
-	
+oad = optimizers.Adam(lr=LEARNING_RATE, epsilon=None, amsgrad=False)
+model.compile(loss='mean_squared_error', optimizer=oad, metrics=['accuracy'])
+model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=[X_test,y_test])
