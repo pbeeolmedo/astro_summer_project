@@ -15,7 +15,7 @@ min_loglam = []
 max_loglam = []
 
 for i in range(numbertorun):
-    print(i)
+    #print(i)
     fname = glob.glob("../02_Data_Files/Spectra/*.fits")[i]
     table = Table.read(fname,hdu=1)
     loglam = table["loglam"].data
@@ -37,3 +37,4 @@ plt.show()
 
 print(np.mean(min_loglam))
 print(np.mean(max_loglam))
+# Chose min = 3.59 and max = 3.95
