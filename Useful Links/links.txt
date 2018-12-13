@@ -1,0 +1,13 @@
+Using SEGUE and CASJobs
+This page describes the SEGUE data available in the DR8 CAS database, and how to access this
+data using queries composed in the SQL language. If you would like to access the data using some
+other system, please go to the Data Access for SDSS DR8 page.
+http://www.sdss3.org/dr8/algorithms/segueii/segue_sqlcookbook.php
+
+
+SEGUE Stellar Parameter Pipeline (SSPP)
+SDSS/SEGUE stellar spectra are processed through the SEGUE Stellar Parameter
+Pipeline (SSPP), and three primary stellar parameters, effective temperature (Teff),
+surface gravity (log g), and metallicity ([Fe/H]) are reported for most stars in the
+temperature range 4000 - 10,000 K and with spectral S/N ratios exceeding 10/1.
+http://www.sdss3.org/dr8/spectro/sspp.php 
