@@ -1,6 +1,8 @@
 from astropy.table import Table
 import numpy as np
 import glob
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import pandas as pd
 from scipy import constants as const
@@ -59,7 +61,7 @@ for i in range(numbertorun):
 			plt.ylabel("Normalised Flux")
 			plt.title("Shifted Spectra for "+subclass)
 			plt.tight_layout()
-			#plt.show()
+			plt.show()
 		else:
 			print("Bad wavelength Range")
 	else:
@@ -94,4 +96,3 @@ model.summary()
 oad = optimizers.Adam(lr=LEARNING_RATE, epsilon=None, amsgrad=False)
 model.compile(loss='mean_squared_error', optimizer=oad, metrics=['accuracy'])
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=[X_test,y_test])
-
