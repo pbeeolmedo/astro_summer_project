@@ -10,12 +10,13 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Activation, Flatten, Input
 from keras import optimizers
+from sklearn.preprocessing import LabelBinarizer
 
 
-numbertorun = 15
-BATCH_SIZE = 32
-EPOCHS = 50
-LEARNING_RATE =0.001
+numbertorun = 25
+BATCH_SIZE = 25
+EPOCHS = 10
+LEARNING_RATE =0.0001
 # t = Table.read(filename,hdu=1)
 # Initialise
 i = 0
@@ -70,29 +71,39 @@ for i in range(numbertorun):
 
 X = np.array(loglam_values)
 y = np.array(subclasses)
-print(y)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-print(X_train.shape)
-print(y_train.shape)
-print(X_test.shape)
+
+unique_labels = set(subclasses)
+encoder = LabelBinarizer()
+one_hot = encoder.fit_transform(list(unique_labels))
+label_dict = dict(zip(unique_labels, one_hot))
+y_one_hot = []
+[y_one_hot.append(label_dict[label]) for label in y]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y_one_hot, test_size=0.2)
 X_train = np.array(X_train)
 X_test = np.array(X_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
-X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
-X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
-
+X_train = X_train.reshape(X_train.shape[0], X_train.shape[1])
+X_test = X_test.reshape(X_test.shape[0], X_test.shape[1])
 
 
 def model():
-	a = Input(shape=(3599,1))
-	b = Dense(128, activation='relu')(a)
-	c = Dense(1, activation='sigmoid')(b)
-	model=Model(inputs = [a], outputs = [c])
+	a = Input(shape=(3599,))
+	b = Dense(256, activation='relu')(a)
+	c = Dense(128, activation='relu')(b)
+	d = Dense(len(unique_labels), activation='softmax')(c)
+	model=Model(inputs = [a], outputs = [d])
 	return model
 
 model=model()
 model.summary()
 oad = optimizers.Adam(lr=LEARNING_RATE, epsilon=None, amsgrad=False)
+<<<<<<< HEAD
 model.compile(loss='mean_squared_error', optimizer=oad, metrics=['accuracy'])
 model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=[X_test,y_test])
+=======
+model.compile(loss='categorical_crossentropy', optimizer=oad, metrics=['accuracy'])
+model.fit(x=X_train, y=y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=(X_test,y_test))
+
+>>>>>>> ea8ed6b249a9c231a9c76be6c217fa62ee105c85
