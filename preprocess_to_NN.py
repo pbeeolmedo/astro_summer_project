@@ -36,6 +36,7 @@ for i in range(numbertorun):
 	subclass = Table.read(fname,hdu=2)['SUBCLASS'].data[0].strip().decode("utf-8")
 	loglam = hdu1["loglam"].data
 	flux = hdu1["flux"].data
+	print(i)
 
 	if plate_quality == "good":
 		if np.min(loglam) <= lower_cutoff_loglam and np.max(loglam) >= upper_cutoff_loglam:
@@ -51,6 +52,7 @@ for i in range(numbertorun):
 			flux_values.append(normalised_flux)
 			good_spec_info.append(df.iloc[[i]].values)
 			subclasses.append(subclass)
+			'''
 			plt.subplot(1,2,1)
 			plt.scatter(loglam, flux, c='green', s=1)
 			plt.xlabel("Loglam")
@@ -62,7 +64,8 @@ for i in range(numbertorun):
 			plt.ylabel("Normalised Flux")
 			plt.title("Shifted Spectra for "+subclass)
 			plt.tight_layout()
-			plt.show()
+			'''
+			#plt.show()
 		else:
 			print("Bad wavelength Range")
 	else:
