@@ -99,11 +99,5 @@ def model():
 model=model()
 model.summary()
 oad = optimizers.Adam(lr=LEARNING_RATE, epsilon=None, amsgrad=False)
-<<<<<<< HEAD
-model.compile(loss='mean_squared_error', optimizer=oad, metrics=['accuracy'])
-model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=[X_test,y_test])
-=======
 model.compile(loss='categorical_crossentropy', optimizer=oad, metrics=['accuracy'])
 model.fit(x=X_train, y=y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, verbose=1, validation_data=(X_test,y_test))
-
->>>>>>> ea8ed6b249a9c231a9c76be6c217fa62ee105c85
