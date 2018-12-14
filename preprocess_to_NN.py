@@ -22,13 +22,16 @@ MAX_NUM_FILES = len(glob.glob("Data_Files/Spectra/*.fits"))
 # Initialise
 i = 0
 flux_values = []
-loglam_values = []
 UPPER_CUTOFF_LOGLAM = 3.95
 LOWER_CUTOFF_LOGLAM = 3.59
+SPECTRUM_LENGTH = 3599
+MAX_CHI = 3
 df = pd.read_csv('Data_Files/segue_dataquery.csv')
 rad_vels = df['elodiervfinal']
 good_spec_info=[]
 subclasses=[]
+LOGLAM_GRID = np.linspace(LOWER_CUTOFF_LOGLAM, UPPER_CUTOFF_LOGLAM, SPECTRUM_LENGTH)
+print(LOGLAM_GRID)
 
 def shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux):
 	plt.subplot(1,2,1)
@@ -42,36 +45,36 @@ def shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux):
 	plt.ylabel("Normalised Flux")
 	plt.title("Shifted Spectra for "+subclass)
 	plt.tight_layout()
-	#plt.show()
+	plt.show()
 
 chi_vals=[]
+num_points=[]
 for i in range(numbertorun):
 	fname = glob.glob("Data_Files/Spectra/*.fits")[i]
 	hdu1 = Table.read(fname,hdu=1)
 	plate_quality = Table.read(fname,hdu=2)['PLATEQUALITY'].data[0].strip().decode("utf-8")
 	subclass = Table.read(fname,hdu=2)['SUBCLASS'].data[0].strip().decode("utf-8")
 	chi = Table.read(fname,hdu=2)['RCHI2'].data[0]
-	if(subclass and chi<=3):
-		loglam = hdu1["loglam"].data
+	z = Table.read(fname,hdu=2)['Z'].data[0]
+	if(subclass and chi<=MAX_CHI):
+		loglam_obs = hdu1["loglam"].data
 		flux = hdu1["flux"].data
 		if plate_quality == "good":
-			if np.min(loglam) <= LOWER_CUTOFF_LOGLAM and np.max(loglam) >= UPPER_CUTOFF_LOGLAM:
-				good_indices = np.where((loglam>LOWER_CUTOFF_LOGLAM) & (loglam<UPPER_CUTOFF_LOGLAM))
-				loglam = loglam[good_indices]
-				flux = flux[good_indices]
-				
-				rad_vel = rad_vels[i]/const.c
-				doppler_factor = np.sqrt((1+rad_vel)/(1-rad_vel))
-				loglam_shifted = doppler_factor*loglam
-				flux_interp = np.interp(loglam_shifted, loglam, flux)
+			loglam_em = loglam_obs - np.log10(z+1)
+			if np.min(loglam_em) <= LOWER_CUTOFF_LOGLAM and np.max(loglam_em) >= UPPER_CUTOFF_LOGLAM:
+				flux_interp = np.interp(LOGLAM_GRID, loglam_em, flux)
 				normalised_flux = flux_interp/np.max(flux_interp)
-				loglam_values.append(loglam_shifted)
 				flux_values.append(normalised_flux)
+				#rad_vel = rad_vels[i]/const.c
+				#doppler_factor = np.sqrt((1+rad_vel)/(1-rad_vel))
+				#loglam_shifted = doppler_factor*loglam_obs
+				#flux_interp = np.interp(loglam_shifted, loglam_obs, flux)
+				#normalised_flux = flux_interp/np.max(flux_interp)
+				#flux_values.append(normalised_flux)
 				good_spec_info.append(df.iloc[[i]].values)
 				subclasses.append(subclass)
 				print("Subclass: "+subclass)
-				#shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux)
-				
+				#shifted_spec_plotter(loglam_obs, flux, LOGLAM_GRID, normalised_flux)	
 			else:
 				print("Bad wavelength Range")
 		else:
