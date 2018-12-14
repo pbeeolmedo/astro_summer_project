@@ -13,17 +13,18 @@ from keras import optimizers
 from sklearn.preprocessing import LabelBinarizer
 
 
-numbertorun = 500
+numbertorun = 1058
 BATCH_SIZE = 32
-EPOCHS = 100
+EPOCHS = 400
 LEARNING_RATE =0.001
+MAX_NUM_FILES = len(glob.glob("Data_Files/Spectra/*.fits"))
 # t = Table.read(filename,hdu=1)
 # Initialise
 i = 0
 flux_values = []
 loglam_values = []
-upper_cutoff_loglam = 3.95
-lower_cutoff_loglam = 3.59
+UPPER_CUTOFF_LOGLAM = 3.95
+LOWER_CUTOFF_LOGLAM = 3.59
 df = pd.read_csv('Data_Files/segue_dataquery.csv')
 rad_vels = df['elodiervfinal']
 good_spec_info=[]
@@ -43,19 +44,19 @@ def shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux):
 	plt.tight_layout()
 	#plt.show()
 
+chi_vals=[]
 for i in range(numbertorun):
 	fname = glob.glob("Data_Files/Spectra/*.fits")[i]
 	hdu1 = Table.read(fname,hdu=1)
 	plate_quality = Table.read(fname,hdu=2)['PLATEQUALITY'].data[0].strip().decode("utf-8")
 	subclass = Table.read(fname,hdu=2)['SUBCLASS'].data[0].strip().decode("utf-8")
 	chi = Table.read(fname,hdu=2)['RCHI2'].data[0]
-	print("Chi Val: "+str(chi))
-	if(subclass):
+	if(subclass and chi<=3):
 		loglam = hdu1["loglam"].data
 		flux = hdu1["flux"].data
 		if plate_quality == "good":
-			if np.min(loglam) <= lower_cutoff_loglam and np.max(loglam) >= upper_cutoff_loglam:
-				good_indices = np.where((loglam>lower_cutoff_loglam) & (loglam<upper_cutoff_loglam))
+			if np.min(loglam) <= LOWER_CUTOFF_LOGLAM and np.max(loglam) >= UPPER_CUTOFF_LOGLAM:
+				good_indices = np.where((loglam>LOWER_CUTOFF_LOGLAM) & (loglam<UPPER_CUTOFF_LOGLAM))
 				loglam = loglam[good_indices]
 				flux = flux[good_indices]
 				
@@ -63,14 +64,12 @@ for i in range(numbertorun):
 				doppler_factor = np.sqrt((1+rad_vel)/(1-rad_vel))
 				loglam_shifted = doppler_factor*loglam
 				flux_interp = np.interp(loglam_shifted, loglam, flux)
-				
 				normalised_flux = flux_interp/np.max(flux_interp)
 				loglam_values.append(loglam_shifted)
 				flux_values.append(normalised_flux)
 				good_spec_info.append(df.iloc[[i]].values)
 				subclasses.append(subclass)
-				print(subclass)
-				print(fname)
+				print("Subclass: "+subclass)
 				#shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux)
 				
 			else:
@@ -78,9 +77,11 @@ for i in range(numbertorun):
 		else:
 			print(plate_quality)
 
-
+	else:
+		print("No subclass or chi too large: "+str(chi))
 df2 = pd.DataFrame(flux_values)
-print(df2)			
+#plt.hist(chi_vals, bins=22)	
+#plt.show()		
 X = np.array(flux_values)
 y = np.array(subclasses)
 
@@ -99,9 +100,6 @@ y_train = np.array(y_train)
 y_test = np.array(y_test)
 X_train = X_train.reshape(X_train.shape[0], X_train.shape[1])
 X_test = X_test.reshape(X_test.shape[0], X_test.shape[1])
-
-for i in range(2):
-	print(X_test[i])
 
 def model():
 	a = Input(shape=(3599,))
