@@ -42,9 +42,14 @@ subclasses_set = set(subclasses_list)
 processed_dataframe = pd.DataFrame(flux_values)
 #print(processed_data_df)
 
-# Pickle part --------
+# Pickle write --------
+data2dump = [flux_values,subclasses_list]
+
 filename2dump = f"data-{len(subclasses_list)}-{len(subclasses_set)}-{MAX_CHI}"
-processed_data_file = open(filename2dump,"wb")
-pickle.dump(processed_dataframe,processed_data_file)
-processed_data_file.close()
+with open(filename2dump,"wb") as file:
+	pickle.dump(data2dump,file)
+
 print(f"File dumped is {os.path.getsize(filename2dump)/1e6} megabytes")
+# Read Pickle file -------
+
+testdata  = pickle.load(filename2dump)
