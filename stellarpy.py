@@ -12,7 +12,7 @@ class Spectrum_2D(object):
 
 class Star(object):
     # Star ...
-    def __init__(self,filename):
+    def __init__(self,filename=None):
         if filename is None:
             raise FileNotFoundError("FITS file not specified")
         self.filename = filename
