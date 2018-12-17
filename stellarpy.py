@@ -74,4 +74,4 @@ class Star(object):
         plt.ylabel("Flux")
         plt.title("Shifted Spectra for "+ self.subclass)
         plt.tight_layout()
-        return plt.show()
+        plt.show()

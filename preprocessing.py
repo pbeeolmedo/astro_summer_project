@@ -1,18 +1,12 @@
 from astropy.table import Table
 import numpy as np
 import glob
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib import pyplot as plt
 import pandas as pd
-from scipy import constants as const
 from stellarpy import Star
 
 flux_values = []
-good_spec_info=[]
 subclasses=[]
-chi_vals=[]
-num_points=[]
+
 MAX_NUM_FILES = len(glob.glob("Data_Files/Spectra/*.fits"))
 numbertorun = int(input(f"Enter number of files to run (max = {MAX_NUM_FILES}) : "))
 
@@ -36,7 +30,8 @@ for i in range(numbertorun):
 			flux_values.append(normalised_flux)
 			subclasses.append(star.subclass)
 			print("Subclass: "+ star.subclass)
-			#star.spectrum_plot
+			#star.spectrum_plot()
+			print(star.z)
 		else:
 			print("Bad wavelength Range")
 	else:
