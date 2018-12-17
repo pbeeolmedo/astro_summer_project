@@ -10,10 +10,12 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Activation, Flatten, Input
 from keras import optimizers
+import sklearn.preprocessing as skp
 from sklearn.preprocessing import LabelBinarizer
+from sklearn.decomposition import PCA
 
 
-numbertorun = 1058
+NUMBER_TO_RUN = 1058
 BATCH_SIZE = 32
 EPOCHS = 400
 LEARNING_RATE =0.001
@@ -49,7 +51,7 @@ def shifted_spec_plotter(loglam, flux, loglam_shifted, normalised_flux):
 
 chi_vals=[]
 num_points=[]
-for i in range(numbertorun):
+for i in range(NUMBER_TO_RUN):
 	fname = glob.glob("Data_Files/Spectra/*.fits")[i]
 	hdu1 = Table.read(fname,hdu=1)
 	plate_quality = Table.read(fname,hdu=2)['PLATEQUALITY'].data[0].strip().decode("utf-8")
@@ -65,6 +67,7 @@ for i in range(numbertorun):
 				flux_interp = np.interp(LOGLAM_GRID, loglam_em, flux)
 				normalised_flux = flux_interp/np.max(flux_interp)
 				flux_values.append(normalised_flux)
+				#flux_values.append(flux_interp)
 				#rad_vel = rad_vels[i]/const.c
 				#doppler_factor = np.sqrt((1+rad_vel)/(1-rad_vel))
 				#loglam_shifted = doppler_factor*loglam_obs
@@ -82,10 +85,26 @@ for i in range(numbertorun):
 
 	else:
 		print("No subclass or chi too large: "+str(chi))
-df2 = pd.DataFrame(flux_values)
-#plt.hist(chi_vals, bins=22)	
-#plt.show()		
-X = np.array(flux_values)
+processed_data_df = pd.DataFrame(flux_values)
+#data_nparray = processed_data_df.values
+scaled_flux = skp.RobustScaler().fit_transform(flux_values)
+#normalised_flux = skp.Normalizer().fit_transform(scaled_flux)
+
+pca = PCA()
+
+principalComponents = pca.fit_transform(scaled_flux)
+print(principalComponents[0])
+print(principalComponents[1])
+print(principalComponents[2])
+print(pca.explained_variance_ratio_)
+x=np.arange(1,len(pca.explained_variance_ratio_)+1,1)
+plt.plot(x, np.cumsum(pca.explained_variance_ratio_))
+plt.show()
+
+#print(X_pca)
+
+X = list(zip(*[principalComponents[0], principalComponents[1], principalComponents[2], principalComponents[3], principalComponents[4], principalComponents[5], principalComponents[6], principalComponents[7]]))
+#X = np.array(scaled_flux)
 y = np.array(subclasses)
 
 unique_labels = set(subclasses)
@@ -105,7 +124,7 @@ X_train = X_train.reshape(X_train.shape[0], X_train.shape[1])
 X_test = X_test.reshape(X_test.shape[0], X_test.shape[1])
 
 def model():
-	a = Input(shape=(3599,))
+	a = Input(shape=(8,))
 	b = Dense(128, activation='relu')(a)
 	c = Dense(64, activation='relu')(b)
 	d = Dense(len(unique_labels), activation='softmax')(c)
