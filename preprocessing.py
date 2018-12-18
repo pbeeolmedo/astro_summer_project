@@ -6,10 +6,16 @@ import pandas as pd
 from stellarpy import Star
 import pickle
 
+
 fits_folder = "Data_Files/Spectra"
 
 MAX_NUM_FILES = len(glob.glob(f"{fits_folder}/*.fits"))
-numbertorun = int(input(f"Enter number of files to run (max = {MAX_NUM_FILES}): "))
+
+numbertorun = input(f"Enter number of files to run (max = {MAX_NUM_FILES}):")
+if numbertorun:
+	numbertorun = int(numbertorun)
+else:
+	numbertorun = 10
 
 LOWER_CUTOFF_LOGLAM = 3.59
 UPPER_CUTOFF_LOGLAM = 3.95
@@ -50,6 +56,12 @@ with open(filename2dump,"wb") as file:
 	pickle.dump(data2dump,file)
 
 print(f"File dumped is {os.path.getsize(filename2dump)/1e6} megabytes")
-# Read Pickle file -------
 
-testdata  = pickle.load(filename2dump)
+# Read Pickle file -------
+'''
+with open(filename2dump,"rb") as file:
+	testdata = pickle.load(file)
+print(testdata)
+print(data2dump)
+print(f" Is chosen point the same in both? : {testdata[0][6][2360]==data2dump[0][6][2360]}")
+'''
