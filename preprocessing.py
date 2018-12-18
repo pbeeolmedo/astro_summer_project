@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from stellarpy import Star
 import pickle
+import sklearn.preprocessing as skp
+
 
 fits_folder = "Data_Files/Spectra"
 
@@ -39,11 +41,13 @@ for i in range(numbertorun):
 		print(f"{i}|Iteration skipped : subclass = {star.subclass} chi_sq = {star.chi_sq} plate quality = {star.plate_quality}")
 
 processed_data_df = pd.DataFrame(flux_values)
+scaled_flux = skp.RobustScaler().fit_transform(flux_values)	
+
 #print(processed_data_df)
 subclasses_set = set(subclasses_list)
 # Pickle part
 filename2dump = f"data-{len(subclasses_list)}-{len(subclasses_set)}-{MAX_CHI}.bin"
 processed_data_file = open(filename2dump,"wb")
-pickle.dump(processed_data_df,processed_data_file)
+pickle.dump([flux_values, subclasses_list],processed_data_file)
 processed_data_file.close()
 print(f"File dumped is {os.path.getsize(filename2dump)/1e6} megabytes")

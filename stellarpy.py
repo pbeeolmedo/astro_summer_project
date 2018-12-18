@@ -23,12 +23,12 @@ class Star(object):
     @property
     def plate_quality(self):
         plate_q = self.hdu2['PLATEQUALITY'].data[0]
-        return plate_q.strip().decode("utf-8")
+        return plate_q.strip()
 
     @property
     def subclass(self):
         subclass = self.hdu2['SUBCLASS'].data[0]
-        return subclass.strip().decode("utf-8")
+        return subclass.strip()
 
     @property
     def ra(self):
