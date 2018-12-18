@@ -40,14 +40,19 @@ for i in range(numbertorun):
 	else:
 		print(f"{i}|Iteration skipped : subclass = {star.subclass} chi_sq = {star.chi_sq} plate quality = {star.plate_quality}")
 
-processed_data_df = pd.DataFrame(flux_values)
-scaled_flux = skp.RobustScaler().fit_transform(flux_values)	
-
-#print(processed_data_df)
 subclasses_set = set(subclasses_list)
-# Pickle part
-filename2dump = f"data-{len(subclasses_list)}-{len(subclasses_set)}-{MAX_CHI}.bin"
-processed_data_file = open(filename2dump,"wb")
-pickle.dump([flux_values, subclasses_list],processed_data_file)
-processed_data_file.close()
+scaled_flux = skp.RobustScaler().fit_transform(flux_values)
+processed_dataframe = pd.DataFrame(flux_values)
+#print(processed_data_df)
+
+# Pickle write --------
+data2dump = [flux_values,subclasses_list]
+
+filename2dump = f"data-{len(subclasses_list)}-{len(subclasses_set)}-{MAX_CHI}"
+with open(filename2dump,"wb") as file:
+	pickle.dump(data2dump,file)
+
 print(f"File dumped is {os.path.getsize(filename2dump)/1e6} megabytes")
+# Read Pickle file -------
+
+testdata  = pickle.load(filename2dump)

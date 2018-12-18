@@ -1,5 +1,6 @@
 import glob
 from stellarpy import Star
+import time
 
 fits_folder = "../Data_Files/Spectra"
 MAX_NUM_FILES = len(glob.glob(f"{fits_folder}/*.fits"))
