@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from stellarpy import Star
 import pickle
+import sklearn.preprocessing as skp
+
 
 
 fits_folder = "Data_Files/Spectra"
@@ -45,6 +47,7 @@ for i in range(numbertorun):
 		print(f"{i}|Iteration skipped : subclass = {star.subclass} chi_sq = {star.chi_sq} plate quality = {star.plate_quality}")
 
 subclasses_set = set(subclasses_list)
+scaled_flux = skp.RobustScaler().fit_transform(flux_values)
 processed_dataframe = pd.DataFrame(flux_values)
 #print(processed_data_df)
 
