@@ -5,7 +5,7 @@ import numpy as np
 t = Table.read('spec-3106-54714-0471.fits',2)
 hdu = fits.open('spec-3106-54714-0471.fits')
 print(hdu[2].header)
-print(t['Z'])
+print("a")
 
 
 #print(hdu[2].header)
