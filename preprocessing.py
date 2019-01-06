@@ -64,7 +64,7 @@ print(f"other keys = {other_keys}")
 # Subclass Histogram Draft ------------------
 subclass_hist(Star.all_subclasses_dict,Star.all_subclasses,numbertorun)
 plt.show()
-
+ 
 # Create and print Data Frame -----------------
 #processed_dataframe = pd.DataFrame(flux_values)
 #print(processed_data_df)

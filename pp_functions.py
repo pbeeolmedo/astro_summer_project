@@ -17,7 +17,7 @@ def numbertorun(fits_folder):
     	return int(numbertorun)
     else:
     	return 10
-        
+
 def subclass_hist(dictionary,ordered_bin_labels,numbertorun):
     plt.bar(range(len(dictionary)),list(dictionary.values()),align='center')
     plt.xticks(range(len(dictionary)),ordered_bin_labels)
@@ -26,7 +26,7 @@ def subclass_hist(dictionary,ordered_bin_labels,numbertorun):
     plt.title(f"Subclass Histogram for numbertorun = {numbertorun} ")
 
 def write2pickle(data2dump,filename2dump):
-    yesno = input(f"Pickle this yes or no (y/n)?")
+    yesno = input(f"Pickle this yes or no (y/n)? :")
     if yesno == 'y':
     	with open(filename2dump,"wb") as file:
             pickle.dump(data2dump,file)
