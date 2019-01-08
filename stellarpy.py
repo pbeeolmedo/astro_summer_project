@@ -20,14 +20,10 @@ class Star(object):
         self.hdu1 = Table.read(self.filename,hdu=1)
         self.hdu2 = Table.read(self.filename,hdu=2)
 
-    all_classes = ["O","B","A","F","G","K","M"]
-    all_subclasses = ['O0', 'O1', 'O2', 'O3', 'O4', 'O5', 'O6', 'O7', 'O8', 'O9',\
-                  'B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9',\
-                  'A0', 'A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9',\
-                  'F0', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9',\
-                  'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9',\
-                  'K0', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7', 'K8', 'K9',\
-                  'M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9']
+    all_classes = ["O","B","A","F","G","K","M","L"]
+    all_subclasses = ['O','OB','B6','B9','A0','A0p','F2','F5','F9','G0','G2','G5','K1','K3','K5',\
+                      'K7','M0','M0V','M2V','M1','M2','M3','M4','M5','M6','M7','M8','L0','L1','L2','L3',\
+                      'L4','L5','L5.5','L9','T2','C','WD','CV']
     all_subclasses_dict = dict(zip(all_subclasses,[0]*len(all_subclasses)))
 
     # HDU 2 obtained properties

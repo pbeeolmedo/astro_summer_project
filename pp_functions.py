@@ -18,6 +18,10 @@ def numbertorun(fits_folder):
     else:
     	return 10
 
+def continuum_normalise(flux_values):
+    contNorm_flux_values = flux_values
+    return contNorm_flux_values
+
 def subclass_hist(dictionary,ordered_bin_labels,numbertorun):
     plt.bar(range(len(dictionary)),list(dictionary.values()),align='center')
     plt.xticks(range(len(dictionary)),ordered_bin_labels)

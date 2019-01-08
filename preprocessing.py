@@ -9,8 +9,8 @@ from pp_functions import subclass_hist,write2pickle,numbertorun
 import sklearn.preprocessing as skp
 
 #fits_folder = "Data_Files/Spectra"
-#fits_folder = "Data_Files/Spectrum_Files"
-fits_folder = "/Volumes/Data_HDD/Spectra"
+fits_folder = "Data_Files/Spectrum_Files"
+#fits_folder = "/Volumes/Data_HDD/Spectra"
 
 numbertorun = numbertorun(fits_folder)
 
@@ -25,7 +25,9 @@ flux_values = []
 subclasses_list=[]
 classes_list = []
 subclasses_counter = Star.all_subclasses_dict
+subclasses_dict = Star.all_subclasses_dict
 other_keys = []
+
 
 for filename in glob.iglob(f"{fits_folder}/*.fits"):
 	i +=1
@@ -64,7 +66,7 @@ print(f"other keys = {other_keys}")
 # Subclass Histogram Draft ------------------
 subclass_hist(Star.all_subclasses_dict,Star.all_subclasses,numbertorun)
 plt.show()
- 
+
 # Create and print Data Frame -----------------
 #processed_dataframe = pd.DataFrame(flux_values)
 #print(processed_data_df)
