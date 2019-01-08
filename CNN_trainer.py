@@ -3,17 +3,22 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Activation, Flatten, Input
-from keras.callbacks import EarlyStopping
+from keras.layers import Conv1D, MaxPooling1D, add
 from keras import optimizers
 import sklearn.preprocessing as skp
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.decomposition import PCA
+from sklearn.metrics import confusion_matrix
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
+import generate_random_color as grc
 import itertools
 
+#Define some constants: to be later determind via grid search
+LEARNING_RATE = 0.001
+BATCH_SIZE = 128
+EPOCHS = 200
 
 #Open pickle file containing spectra flux values and matching subclasses
 with open ('data-17621-19-3.bin', 'rb') as training_data_file:
@@ -33,8 +38,7 @@ one_hot = encoder.fit_transform(list(unique_labels))
 label_dict = dict(zip(unique_labels, one_hot))
 y_one_hot = []
 [y_one_hot.append(label_dict[label]) for label in y]
-
-#Split data into training, validation and testing sets
+#Split data into training and validation sets
 X_train, X_testing, y_train, y_testing = train_test_split(X[:len(X)], y_one_hot[:len(y_one_hot)], test_size=0.2, shuffle=True)
 X_val, X_test, y_val, y_test = train_test_split(X_testing, y_testing, test_size=0.2, shuffle=True)
 
@@ -46,53 +50,53 @@ y_train = np.array(y_train)
 y_val = np.array(y_val)
 y_test = np.array(y_test)
 
-X_train = X_train.reshape(X_train.shape[0], X_train.shape[1])
-X_val = X_val.reshape(X_val.shape[0], X_val.shape[1])
-X_test = X_test.reshape(X_test.shape[0], X_test.shape[1])
+X_train = X_train.reshape(X_train.shape[0], X_train.shape[1],1)
+X_val = X_val.reshape(X_val.shape[0], X_val.shape[1],1)
+X_test = X_test.reshape(X_test.shape[0], X_test.shape[1],1)
 
-# lr=[0.005]
-# batch_size=[100, 128, 150]
-# epochs=[200]
-# hu1=[100, 128, 150]
-# hu2=[32, 64, 100]
-# hu3=[32, 64, 100]
-# d1=[0.2, 0.25, 0.3]
-# d2=[0.2, 0.25, 0.3]
-# parameters = dict(lr=lr, batch_size=batch_size, epochs=epochs, hu1=hu1, hu2=hu2, hu3=hu3, d1=d1, d2=d2)
+print(label_dict)
 
-lr=0.0001
-batch_size=100
-epochs=50
-hu1=128
-hu2=64
-hu3=32
-d1=0.1
-d2=0.1
+hyperparams = [0,32,2,2,0.5,32,2,4,0.5,0.007,32,5]
+print(len(y_train))
+print(len(y_val))
+print(len(y_test))
+filter1 = int(hyperparams[1])
+kernel1 = int(hyperparams[2])
+pool1 = int(hyperparams[3])
+dropout1 = float(hyperparams[4])
+filter2 = int(hyperparams[5])
+kernel2 = int(hyperparams[6])
+pool2 = int(hyperparams[7])
+dropout2 = float(hyperparams[8])
+learning_rate = float(hyperparams[9])
+batch_size = int(hyperparams[10])
+epochs = int(hyperparams[11])
+
+#parameters = dict(lr=lr, batch_size=batch_size, epochs=epochs, hu1=hu1, hu2=hu2, hu3=hu3, d1=d1, d2=d2)
+
+
 
 #Define the neural network model
 def model():
-	model=Sequential()
-	model.add(Dense(hu1, activation='relu', input_dim=X_train.shape[1]))
-	model.add(Dropout(d1))
-	model.add(Dense(hu2, activation='relu'))
-	model.add(Dropout(d2))
-	model.add(Dense(hu3, activation='relu'))
-	model.add(Dense(len(unique_labels), activation='softmax'))
-	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+	a = Input(shape=(X_train.shape[1],1))
+	b = Conv1D(filter1, kernel1, activation='relu',data_format='channels_last', padding = 'same')(a)
+	c = MaxPooling1D(pool_size=(pool1))(b)
+	d = Dropout(dropout1)(c)
+	e = Conv1D(filter2, kernel2, activation='relu', padding='same') (d)
+	f = MaxPooling1D(pool_size=(pool2))(e)
+	g = Dropout(dropout2)(f)
+	h = Flatten()(g)
+	i = Dense(128,activation='relu') (h)
+	j = Dense(len(unique_labels), activation='softmax')(i)
+	model=Model(inputs = [a], outputs = [j])
 	return model
 
-#Define early stopping callback 
-es = EarlyStopping(monitor='val_loss',
-                              min_delta=0,
-                              patience=10,
-                              verbose=1, mode='auto')
-	
 #Run the model
 model = model()
 model.summary()
-oad = optimizers.Adam(lr=lr, beta_1=0.999, beta_2=0.8, epsilon=None, amsgrad=False)
-model.fit(x=X_train, y=y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_val,y_val), callbacks=[es])
-
+oad = optimizers.Adam(lr=learning_rate, epsilon=None, amsgrad=False)
+model.compile(loss='categorical_crossentropy', optimizer=oad, metrics=['accuracy'])
+model.fit(x=X_train, y=y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(X_val,y_val))
 
 y_preds = model.predict(X_test, batch_size=32, verbose=1)
 pred_classes = []
@@ -104,6 +108,8 @@ for p in y_preds:
 
 test_class = np.argmax(y_test, axis=1)	
 cm = confusion_matrix(test_class, pred_classes)
+print(cm)
+print(label_dict)
 
 sub=[]
 sub_one_hot=[]
@@ -113,6 +119,10 @@ for k,v in label_dict.items():
 		sub_one_hot.append(np.argmax(v))
 
 sorted_sub, sorted_num = zip(*sorted(zip(sub, sub_one_hot)))
+print(sorted_sub)
+print(sorted_num)
+print(test_class[:])
+print(pred_classes[:])
 classes = list(sorted_sub)
 
 #The following code was copied from scikit_learn docs at:
@@ -152,11 +162,5 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 	
-plot_confusion_matrix(cm, classes=classes, normalize=True)
+plot_confusion_matrix(cm, classes=classes)
 plt.show()	
-# KC_model = KerasClassifier(build_fn=model, verbose=1)
-# grid = GridSearchCV(estimator=KC_model, param_grid=parameters, verbose=1)
-# grid_search = grid.fit(X_train, y_train)
-# print(grid_search.best_params_)
-# print(grid_search.best_score_)
-
