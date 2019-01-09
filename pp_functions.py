@@ -2,6 +2,7 @@
 from matplotlib import pyplot as plt
 import pickle
 import os
+import send2trash
 from glob import iglob
 # ['WD', 'A0p', 'A0p', 'WD', 'WD', 'WD', 'A0p', 'CV', 'WD', 'A0p', 'WD', 'WD', 'WD', 'A0p', 'A0p',
 #'A0p', 'WD', 'A0p', 'A0p', 'WD', 'A0p', 'CV', 'WD', 'A0p', 'CV', 'A0p', 'WD', 'A0p',
@@ -17,6 +18,20 @@ def numbertorun(fits_folder):
     	return int(numbertorun)
     else:
     	return 10
+
+def path_clear_and_create(output_folder):
+    if os.path.isdir(output_folder):
+    	yesno = input(f"Are you sure you want to delete {output_folder} (y/n) ? :")
+    	if yesno == "n":
+    		raise Exception(f"{output_folder} was not deleted as asked. Retry scrpt with different a output_folder or delete old one ")
+    	else:
+    		send2trash.send2trash(output_folder)
+    os.makedirs(f"{output_folder}/Bad_Wavelength_Range_Error")
+
+def chisq_for_filename(chi_sq):
+    integer = int(chi_sq)
+    decimal = int(100*(chi_sq - integer))
+    return f"{integer:02d}-{decimal:02d}"
 
 def continuum_normalise(flux_values):
     contNorm_flux_values = flux_values

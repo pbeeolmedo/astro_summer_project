@@ -33,6 +33,14 @@ class Star(object):
         return plate_q.strip().decode("utf-8")
 
     @property
+    def plate_quality_index(self):
+        # index is one (1) if plateQ is good else its zero (0)
+        index = 0
+        if self.plate_quality == "good":
+            index = 1
+        return index
+
+    @property
     def spectral_subclass(self):
         subclass = self.hdu2['SUBCLASS'].data[0]
         return subclass.strip().decode("utf-8")

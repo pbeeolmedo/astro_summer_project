@@ -64,7 +64,7 @@ print(subclasses_counter)
 print(f"other keys = {other_keys}")
 
 # Subclass Histogram Draft ------------------
-subclass_hist(Star.all_subclasses_dict,Star.all_subclasses,numbertorun)
+subclass_hist(subclasses_counter,Star.all_subclasses,numbertorun)
 plt.show()
 
 # Create and print Data Frame -----------------
