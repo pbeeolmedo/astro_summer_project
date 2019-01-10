@@ -1,18 +1,51 @@
+#!/usr/bin/env python
 from astropy.table import Table
 import numpy as np
+import os
+import fnmatch
+import re
+import glob
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
-from collections import OrderedDict
+from pp_functions import filename_data
 
-class Spectrum_2D(object):
+class FluxMatrix(object):
     # Spectrum 2d
-    def __init__(self,loglam_obs,flux_obs):
-        self.loglam_obs = loglam_obs
-        self.flux_obs = flux_obs
+    def __init__(self,SEGUE_folder=None):
+        if SEGUE_folder is None:
+            raise FileNotFoundError("FITS file not specified")
+        self.folder = SEGUE_folder
+        self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir() and len(f.name)<5) ]
+
+        self.subclass_hist_dict = Star.all_subclasses_dict
+        for subclass in self.subclass_list:
+            subclass_directory = f"{self.folder}/{subclass}/"
+            self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
+
+    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_limit=1):
+        flux_values = []
+        i = 0
+        for subclass in self.subclass_list:
+            if min_files < self.subclass_hist_dict[subclass]:
+                for npy_file in glob.iglob(f"{self.folder}/{subclass}/*.npy"):
+                    filename = re.search('([^[\/]*$)',npy_file).group(0)
+                    [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
+
+                    i += 1
+                    if i > max_files and chi_sq < max_chisq and plate_q = :
+                        print(f"{subclass} omitted : {self.subclass_hist_dict[subclass]} files but " +
+                              f"maximum = {min_files}")
+                        break
+                    flux_values.append([np.load(npy_file),subclass])
+            else:
+                print(f"{subclass} omitted : {self.subclass_hist_dict[subclass]} files but " +
+                      f"minimum = {min_files}")
+        return flux_values
+
 
 class Star(object):
-    # Star ...
+    # Star object which requires a 'filename.fits' input and reads the HDUs it has
     def __init__(self,filename=None):
         if filename is None:
             raise FileNotFoundError("FITS file not specified")

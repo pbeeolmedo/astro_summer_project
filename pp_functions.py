@@ -2,11 +2,9 @@
 from matplotlib import pyplot as plt
 import pickle
 import os
+import re
 import send2trash
 from glob import iglob
-# ['WD', 'A0p', 'A0p', 'WD', 'WD', 'WD', 'A0p', 'CV', 'WD', 'A0p', 'WD', 'WD', 'WD', 'A0p', 'A0p',
-#'A0p', 'WD', 'A0p', 'A0p', 'WD', 'A0p', 'CV', 'WD', 'A0p', 'CV', 'A0p', 'WD', 'A0p',
-#'WD', 'A0p', 'WD', 'WD', 'WD', 'WD', 'A0p', 'WD', 'CV', 'A0p', 'WD', 'WD', 'WD', 'CV', 'A0p']
 
 def numbertorun(fits_folder):
     MAX_NUM_FILES = 0
@@ -50,3 +48,17 @@ def write2pickle(data2dump,filename2dump):
     	with open(filename2dump,"wb") as file:
             pickle.dump(data2dump,file)
     	print(f"File [{filename2dump}] dumped is {os.path.getsize(filename2dump)/1e6} megabytes")
+
+# ------------------- POST 'SEGUE' FOLDER CREATION ------------------
+
+def filename_data(filename=None):
+    if filename is None:
+        raise FileNotFoundError("Filename not specified")
+    plate_quality = filename[0]
+    chi_sq_integer = int(filename[2:4])
+    chi_sq_decimal = int(filename[5:7])
+    chi_sq = chi_sq_integer+(chi_sq_decimal/100)
+    subclass = re.match('([^_]*)',filename[8:]).group(0)
+    unique_id = filename[-19:-4]
+    filetype = filename[-3:]
+    return [plate_quality,chi_sq,subclass,unique_id,filetype]
