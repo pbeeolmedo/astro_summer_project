@@ -21,7 +21,8 @@ def path_clear_and_create(output_folder):
     if os.path.isdir(output_folder):
     	yesno = input(f"Are you sure you want to delete {output_folder} (y/n) ? :")
     	if yesno == "n":
-    		raise Exception(f"{output_folder} was not deleted as asked. Retry scrpt with different a output_folder or delete old one ")
+    		raise Exception(f"{output_folder} was not deleted as asked." +
+                            f"Retry scrpt with different a output_folder or delete old one ")
     	else:
     		send2trash.send2trash(output_folder)
     error_folder_name = f"{output_folder}/Error"
