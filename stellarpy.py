@@ -4,6 +4,7 @@ import numpy as np
 import os
 import fnmatch
 import re
+import re
 import glob
 import matplotlib
 matplotlib.use("TkAgg")
@@ -16,32 +17,44 @@ class FluxMatrix(object):
         if SEGUE_folder is None:
             raise FileNotFoundError("FITS file not specified")
         self.folder = SEGUE_folder
-        self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir() and len(f.name)<5) ]
-
+        self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir()) and (not re.match('Error.*',f.name))]
         self.subclass_hist_dict = Star.all_subclasses_dict
         for subclass in self.subclass_list:
             subclass_directory = f"{self.folder}/{subclass}/"
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_limit=1):
+    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=['']):
         flux_values = []
-        i = 0
+        subclass_list =[]
+        overall_count = 0
+        subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
+
         for subclass in self.subclass_list:
+            i = 0
+            if subclass in exclusion_list:
+                print(f"{subclass}: Omitted : Exclusion list = {exclusion_list} ")
+                break
             if min_files < self.subclass_hist_dict[subclass]:
                 for npy_file in glob.iglob(f"{self.folder}/{subclass}/*.npy"):
+                    i += 1
+                    if i > max_files:
+                        print(f"{subclass}: Iteration number {i} and max is {max_files} ")
+                        break
                     filename = re.search('([^[\/]*$)',npy_file).group(0)
                     [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
-
-                    i += 1
-                    if i > max_files and chi_sq < max_chisq and plate_q = :
-                        print(f"{subclass} omitted : {self.subclass_hist_dict[subclass]} files but " +
-                              f"maximum = {min_files}")
-                        break
-                    flux_values.append([np.load(npy_file),subclass])
+                    if (chi_sq < max_chisq) and (plate_quality in plate_quality_choice):
+                        flux_values.append(np.load(npy_file))
+                        subclass_list.append(subclass)
+                        subclass_counter[subclass] += 1
+                        overall_count += 1
+                    else:
+                        print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
+                              f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
             else:
-                print(f"{subclass} omitted : {self.subclass_hist_dict[subclass]} files but " +
+                print(f"{subclass}: Omitted : {self.subclass_hist_dict[subclass]} files but " +
                       f"minimum = {min_files}")
-        return flux_values
+            matrix = [flux_values,subclass_list]
+        return [matrix,overall_count,subclass_counter]
 
 
 class Star(object):
@@ -56,7 +69,7 @@ class Star(object):
     all_classes = ["O","B","A","F","G","K","M","L"]
     all_subclasses = ['O','OB','B6','B9','A0','A0p','F2','F5','F9','G0','G2','G5','K1','K3','K5',\
                       'K7','M0','M0V','M2V','M1','M2','M3','M4','M5','M6','M7','M8','L0','L1','L2','L3',\
-                      'L4','L5','L5.5','L9','T2','C','WD','CV']
+                      'L4','L5','L5.5','L9','T2','Carbon','WD','CV','STARFORMING']
     all_subclasses_dict = dict(zip(all_subclasses,[0]*len(all_subclasses)))
 
     # HDU 2 obtained properties

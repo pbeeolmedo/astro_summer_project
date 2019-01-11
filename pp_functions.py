@@ -24,7 +24,9 @@ def path_clear_and_create(output_folder):
     		raise Exception(f"{output_folder} was not deleted as asked. Retry scrpt with different a output_folder or delete old one ")
     	else:
     		send2trash.send2trash(output_folder)
-    os.makedirs(f"{output_folder}/Bad_Wavelength_Range_Error")
+    error_folder_name = f"{output_folder}/Error"
+    os.makedirs(error_folder_name)
+    return error_folder_name
 
 def chisq_for_filename(chi_sq):
     integer = int(chi_sq)
@@ -35,12 +37,12 @@ def continuum_normalise(flux_values):
     contNorm_flux_values = flux_values
     return contNorm_flux_values
 
-def subclass_hist(dictionary,ordered_bin_labels,numbertorun):
+def subclass_hist(dictionary,ordered_bin_labels,number_of_stars='no input given'):
     plt.bar(range(len(dictionary)),list(dictionary.values()),align='center')
-    plt.xticks(range(len(dictionary)),ordered_bin_labels)
+    plt.xticks(range(len(dictionary)),ordered_bin_labels,rotation='vertical')
     plt.xlabel("Stellar Spectral Subclasses")
     plt.ylabel("Count")
-    plt.title(f"Subclass Histogram for numbertorun = {numbertorun} ")
+    plt.title(f"Subclass Histogram: Number of Stars = {number_of_stars} ")
 
 def write2pickle(data2dump,filename2dump):
     yesno = input(f"Pickle this yes or no (y/n)? :")
@@ -54,7 +56,7 @@ def write2pickle(data2dump,filename2dump):
 def filename_data(filename=None):
     if filename is None:
         raise FileNotFoundError("Filename not specified")
-    plate_quality = filename[0]
+    plate_quality = int(filename[0])
     chi_sq_integer = int(filename[2:4])
     chi_sq_decimal = int(filename[5:7])
     chi_sq = chi_sq_integer+(chi_sq_decimal/100)
