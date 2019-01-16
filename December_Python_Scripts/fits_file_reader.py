@@ -3,9 +3,12 @@ import numpy as np
 import glob
 from matplotlib import pyplot as plt
 
-numbertorun = 100
+numbertorun = 2
+filename = "/Users/Pablo/OneDrive - UNSW/4th Year/Summer Physics/Research/01_AstroProject_Main/Small_Data_Files/spec-3106-54714-0471.fits"
+t = Table.read(filename,hdu=1)
+print(t)
 
-# t = Table.read(filename,hdu=1)
+'''
 # Initialise
 i = 0
 flux_values = []
@@ -27,14 +30,16 @@ for i in range(numbertorun):
     min_loglam.append(np.min(loglam))
     max_loglam.append(np.max(loglam))
 
-'''
+
+
 plt.scatter(list(range(numbertorun)),min_loglam)
 plt.scatter(list(range(numbertorun)),max_loglam)
 plt.plot([0,numbertorun],[np.mean(min_loglam),np.mean(min_loglam)])
 plt.plot([0,numbertorun],[np.mean(max_loglam),np.mean(max_loglam)])
 plt.show()
-'''
+
 print('jj')
 print(np.mean(min_loglam))
 print(np.mean(max_loglam))
 # Chose min = 3.59 and max = 3.95
+'''

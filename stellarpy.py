@@ -4,7 +4,6 @@ import numpy as np
 import os
 import fnmatch
 import re
-import re
 import glob
 import matplotlib
 matplotlib.use("TkAgg")
@@ -17,6 +16,7 @@ class FluxMatrix(object):
         if SEGUE_folder is None:
             raise FileNotFoundError("FITS file not specified")
         self.folder = SEGUE_folder
+        #self.subclass_list = [f.name for f in os.scandir(self.folder) if (not re.match('Error.*',f.name))]
         self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir()) and (not re.match('Error.*',f.name))]
         self.subclass_hist_dict = Star.all_subclasses_dict
         for subclass in self.subclass_list:
@@ -28,31 +28,39 @@ class FluxMatrix(object):
         subclass_list =[]
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
-
+        print(self.subclass_list)
         for subclass in self.subclass_list:
             i = 0
             if subclass in exclusion_list:
                 print(f"{subclass}: Omitted : Exclusion list = {exclusion_list} ")
-                break
-            if min_files < self.subclass_hist_dict[subclass]:
-                for npy_file in glob.iglob(f"{self.folder}/{subclass}/*.npy"):
-                    i += 1
-                    if i > max_files:
-                        print(f"{subclass}: Iteration number {i} and max is {max_files} ")
-                        break
-                    filename = re.search('([^[\/]*$)',npy_file).group(0)
-                    [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
-                    if (chi_sq < max_chisq) and (plate_quality in plate_quality_choice):
-                        flux_values.append(np.load(npy_file))
-                        subclass_list.append(subclass)
-                        subclass_counter[subclass] += 1
-                        overall_count += 1
-                    else:
-                        print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
-                              f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
-            else:
+                continue
+            if self.subclass_hist_dict[subclass] < min_files:
                 print(f"{subclass}: Omitted : {self.subclass_hist_dict[subclass]} files but " +
                       f"minimum = {min_files}")
+                continue
+            for npy_file in glob.iglob(f"{self.folder}/{subclass}/*.npy"):
+                if i == max_files:
+                    print(f"{subclass}: Iteration number {i} and max is {max_files} ")
+                    break
+
+                filename = re.search('([^[\/]*$)',npy_file).group(0)
+                [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
+
+                if ( i>=min_files ) and ( (chi_sq > max_chisq) or (plate_quality not in plate_quality_choice) ):
+                    print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
+                          f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
+                    continue
+
+                flux_array = np.load(npy_file)
+                processed_flux_array = flux_array/np.max(flux_array) #comment out after ppfunc is done
+                #function :  processed_flux = flux_pprocessing(flux_interp,param1=4,param2=True)
+                flux_values.append(processed_flux_array)
+                subclass_list.append(subclass)
+                subclass_counter[subclass] += 1
+                overall_count += 1
+                i += 1
+                if overall_count%50 == 0 : print(f"Overall count is {overall_count}")
+
             matrix = [flux_values,subclass_list]
         return [matrix,overall_count,subclass_counter]
 

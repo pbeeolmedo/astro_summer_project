@@ -1,10 +1,10 @@
 # Some functions to help with preprocessing
 from matplotlib import pyplot as plt
-import pickle
 import os
 import re
 import send2trash
 from glob import iglob
+import pickle
 
 def numbertorun(fits_folder):
     MAX_NUM_FILES = 0
@@ -38,12 +38,12 @@ def continuum_normalise(flux_values):
     contNorm_flux_values = flux_values
     return contNorm_flux_values
 
-def subclass_hist(dictionary,ordered_bin_labels,number_of_stars='no input given'):
-    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center')
+def subclass_hist(dictionary,ordered_bin_labels,title='no input given',input_log=False):
+    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=input_log)
     plt.xticks(range(len(dictionary)),ordered_bin_labels,rotation='vertical')
     plt.xlabel("Stellar Spectral Subclasses")
     plt.ylabel("Count")
-    plt.title(f"Subclass Histogram: Number of Stars = {number_of_stars} ")
+    plt.title(f"Subclass Histogram: Number of Stars = {sum(dictionary.values())}: {title} ")
 
 def write2pickle(data2dump,filename2dump):
     yesno = input(f"Pickle this yes or no (y/n)? :")
@@ -65,3 +65,14 @@ def filename_data(filename=None):
     unique_id = filename[-19:-4]
     filetype = filename[-3:]
     return [plate_quality,chi_sq,subclass,unique_id,filetype]
+
+def flux_pprocessing(flux_values=None):
+    if flux_values is None:
+        raise TypeError("Function requires 'flux_values,subclass_list' arrays as input (not None).")
+
+
+# ------------------- POST 'MATRIX' CREATION ------------------
+
+def train_test_split():
+
+    return
