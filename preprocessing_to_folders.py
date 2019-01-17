@@ -11,12 +11,12 @@ from stellarpy import Star
 from pp_functions import numbertorun,chisq_for_filename,path_clear_and_create
 
 #fits_folder = "Data_Files/Spectra"
-#fits_folder = "Data_Files/Spectrum_Files"
-fits_folder = "/Volumes/Data_HDD/Spectra"
+fits_folder = "Data_Files/Spectrum_Files"
+#fits_folder = "/Volumes/Data_HDD/Spectra"
 
-output_folder = "/Volumes/Data_HDD/SEGUE"
+#output_folder = "/Volumes/Data_HDD/SEGUE"
 #output_folder = "Data_Files/SEGUE"
-#output_folder = "/Users/Pablo/Desktop/SEGUE"
+output_folder = "/Users/Pablo/Desktop/SEGUE"
 
 error_folder_name = path_clear_and_create(output_folder)
 

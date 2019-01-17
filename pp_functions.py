@@ -6,12 +6,14 @@ import send2trash
 from glob import iglob
 import pickle
 
-def numbertorun(fits_folder):
+def numbertorun(fits_folder,usr_input=True):
     MAX_NUM_FILES = 0
     for file in iglob(f"{fits_folder}/*.fits"):
     		MAX_NUM_FILES += 1
-    numbertorun = input(f"Enter number of files to run (max = {MAX_NUM_FILES}):")
-
+    if usr_input is True:
+        numbertorun = input(f"Enter number of files to run (max = {MAX_NUM_FILES}):")
+    else:
+        numbertorun = MAX_NUM_FILES
     if numbertorun:
     	return int(numbertorun)
     else:
@@ -19,15 +21,28 @@ def numbertorun(fits_folder):
 
 def path_clear_and_create(output_folder):
     if os.path.isdir(output_folder):
-    	yesno = input(f"Are you sure you want to delete {output_folder} (y/n) ? :")
-    	if yesno == "n":
-    		raise Exception(f"{output_folder} was not deleted as asked." +
-                            f"Retry scrpt with different a output_folder or delete old one ")
-    	else:
-    		send2trash.send2trash(output_folder)
+        yesno = input(f"Are you sure you want to delete {output_folder} (y/n) ? :")
+        if yesno == "n":
+            raise Exception(f"{output_folder} was not deleted as asked."+
+            f"Retry scrpt with different a output_folder or delete old one ")
+        else:
+            send2trash.send2trash(output_folder)
     error_folder_name = f"{output_folder}/Error"
     os.makedirs(error_folder_name)
     return error_folder_name
+
+def list_index_splitter(length_list,chunks=1):
+    inputs = []
+    print('hello')
+    len_chunks = int(length_list/chunks)
+    for i in range(chunks):
+        start = i*(len_chunks)
+        if i == chunks-1:
+            end = -1
+        else:
+            end = (i+1)*(len_chunks)-1
+        inputs.append([start,end])
+    return inputs
 
 def chisq_for_filename(chi_sq):
     integer = int(chi_sq)
@@ -38,12 +53,14 @@ def continuum_normalise(flux_values):
     contNorm_flux_values = flux_values
     return contNorm_flux_values
 
-def subclass_hist(dictionary,ordered_bin_labels,title='no input given',input_log=False):
-    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=input_log)
+def subclass_hist(dictionary,ordered_bin_labels,title='no input given',input_log=False,png_file=None):
+    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=input_log,zorder=3)
     plt.xticks(range(len(dictionary)),ordered_bin_labels,rotation='vertical')
     plt.xlabel("Stellar Spectral Subclasses")
     plt.ylabel("Count")
     plt.title(f"Subclass Histogram: Number of Stars = {sum(dictionary.values())}: {title} ")
+    plt.grid(which="both",color='lightgrey',zorder=0,ls='--')
+    if png_file is not None: plt.savefig(f"{png_file}-{sum(dictionary.values())}.png")
 
 def write2pickle(data2dump,filename2dump):
     yesno = input(f"Pickle this yes or no (y/n)? :")
@@ -74,5 +91,4 @@ def flux_pprocessing(flux_values=None):
 # ------------------- POST 'MATRIX' CREATION ------------------
 
 def train_test_split():
-
     return

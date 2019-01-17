@@ -23,15 +23,16 @@ class FluxMatrix(object):
             subclass_directory = f"{self.folder}/{subclass}/"
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=['']):
+    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=[''],inclusion_list=['']):
         flux_values = []
         subclass_list =[]
+        plate_ids_used = []
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
         print(self.subclass_list)
         for subclass in self.subclass_list:
             i = 0
-            if subclass in exclusion_list:
+            if (subclass in exclusion_list):
                 print(f"{subclass}: Omitted : Exclusion list = {exclusion_list} ")
                 continue
             if self.subclass_hist_dict[subclass] < min_files:
@@ -46,7 +47,7 @@ class FluxMatrix(object):
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
                 [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
 
-                if ( i>=min_files ) and ( (chi_sq > max_chisq) or (plate_quality not in plate_quality_choice) ):
+                if (subclass not in inclusion_list) and (chi_sq > max_chisq) or (plate_quality not in plate_quality_choice):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
                           f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
                     continue
@@ -56,13 +57,14 @@ class FluxMatrix(object):
                 #function :  processed_flux = flux_pprocessing(flux_interp,param1=4,param2=True)
                 flux_values.append(processed_flux_array)
                 subclass_list.append(subclass)
-                subclass_counter[subclass] += 1
-                overall_count += 1
+                plate_ids_used.append(id)
                 i += 1
                 if overall_count%50 == 0 : print(f"Overall count is {overall_count}")
+                overall_count += 1
+                subclass_counter[subclass] += 1
 
             matrix = [flux_values,subclass_list]
-        return [matrix,overall_count,subclass_counter]
+        return [matrix,overall_count,subclass_counter,plate_ids_used]
 
 
 class Star(object):
@@ -76,7 +78,7 @@ class Star(object):
 
     all_classes = ["O","B","A","F","G","K","M","L"]
     all_subclasses = ['O','OB','B6','B9','A0','A0p','F2','F5','F9','G0','G2','G5','K1','K3','K5',\
-                      'K7','M0','M0V','M2V','M1','M2','M3','M4','M5','M6','M7','M8','L0','L1','L2','L3',\
+                      'K7','M0','M0V','M1','M2','M2V','M3','M4','M5','M6','M7','M8','L0','L1','L2','L3',\
                       'L4','L5','L5.5','L9','T2','Carbon','WD','CV','STARFORMING']
     all_subclasses_dict = dict(zip(all_subclasses,[0]*len(all_subclasses)))
 
