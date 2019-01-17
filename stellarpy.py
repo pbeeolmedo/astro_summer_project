@@ -23,14 +23,16 @@ class FluxMatrix(object):
             subclass_directory = f"{self.folder}/{subclass}/"
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=[''],inclusion_list=['']):
+    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=[''],inclusion_list=[''],subclasses = None):
+        if subclasses is None:
+            subclasses = self.subclass_list
         flux_values = []
         subclass_list =[]
         plate_ids_used = []
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
-        print(self.subclass_list)
-        for subclass in self.subclass_list:
+        print(subclasses)
+        for subclass in subclasses:
             i = 0
             if (subclass in exclusion_list):
                 print(f"{subclass}: Omitted : Exclusion list = {exclusion_list} ")

@@ -55,14 +55,11 @@ fits_folder="/Volumes/Data_HDD/Spectra"
 output_folder="/Users/Pablo/Desktop/SEGUE"
 error_folder_name = path_clear_and_create(output_folder)
 
-#inputs =[ [0,150],[151,300],[301,450],[451,600],[601,750],[751,820],[821,840],[841,870],[870,-1] ]
 numFiles = numbertorun(fits_folder,False)
-print(numFiles)
-print(type(numFiles))
 inputs = list_index_splitter(numFiles,8)
 print(inputs)
 num_cores = multiprocessing.cpu_count()
 
-Parallel(n_jobs=num_cores)(delayed(hpc_pp2folder)(i) for i in inputs)
+Parallel(n_jobs=num_cores-1)(delayed(hpc_pp2folder)(i) for i in inputs)
 
 # Useful lines/prints for debugging/ troubleshooting --------------
