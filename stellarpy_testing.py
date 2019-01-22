@@ -16,6 +16,13 @@ data = FluxMatrix(path)
 print(data.folder)
 subclasses = data.subclass_list
 
+LOWER_CUTOFF_LOGLAM = 3.59
+UPPER_CUTOFF_LOGLAM = 3.95
+SPECTRUM_LENGTH = 3599
+#LOGLAM_GRID = np.linspace(LOWER_CUTOFF_LOGLAM, UPPER_CUTOFF_LOGLAM, SPECTRUM_LENGTH)
+a = np.load('LOGLAM_GRID.npy')
+print(a)
+
 # ------- Histogram Plot----------------
 '''
 print(data.subclass_hist_dict)
@@ -41,7 +48,7 @@ subclass_hist(output[2],Star.all_subclasses,'hello',True,f"Data_Files/Histogram"
 plt.show()
 print(f"Size of output is::{getsizeof(output[0])}::{getsizeof(output[1])}::{getsizeof(output[2])}::{getsizeof(output[3])}")
 write2pickle(output,f"Data_Files/OUTPUT_{output[1]}.bin")
-'''
+
 
 for subclass in subclasses:
     maxChiSq = 1.5
@@ -58,3 +65,4 @@ for subclass in subclasses:
     np.save(f"Data_Files/Average/Matrix_{subclass}",np.array(output[0]))
     np.save(f"Data_Files/Average/Median_{subclass}",np.array(median))
     np.save(f"Data_Files/Average/Mean_{subclass}",np.array(mean))
+'''

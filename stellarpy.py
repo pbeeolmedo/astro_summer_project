@@ -16,7 +16,6 @@ class FluxMatrix(object):
         if SEGUE_folder is None:
             raise FileNotFoundError("FITS file not specified")
         self.folder = SEGUE_folder
-        #self.subclass_list = [f.name for f in os.scandir(self.folder) if (not re.match('Error.*',f.name))]
         self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir()) and (not re.match('Error.*',f.name))]
         self.subclass_hist_dict = Star.all_subclasses_dict
         for subclass in self.subclass_list:

@@ -87,7 +87,6 @@ def flux_pprocessing(flux_values=None):
     if flux_values is None:
         raise TypeError("Function requires 'flux_values,subclass_list' arrays as input (not None).")
 
-
 # ------------------- POST 'MATRIX' CREATION ------------------
 
 def train_test_split():
