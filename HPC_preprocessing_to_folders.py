@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import time
 import multiprocessing
 from joblib import Parallel, delayed
 import numpy as np

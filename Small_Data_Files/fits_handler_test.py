@@ -2,10 +2,10 @@ from astropy.table import Table
 from astropy.io import fits
 import numpy as np
 
-t = Table.read('spec-3106-54714-0471.fits',2)
-hdu = fits.open('spec-3106-54714-0471.fits')
-print(hdu[2].header)
-print("a")
+t = Table.read('s0001.fits',1)
+# hdu = fits.open('spec-3106-54714-0471.fits')
+#print(hdu[2].header)
+print(t)
 
 
 #print(hdu[2].header)
