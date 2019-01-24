@@ -31,6 +31,15 @@ def forloopFunc(inputs=[0,-1],list=forloop_list):
         print(i)
         # -EDIT BELOW HERE- do some things using 'list_item' as the name of the item in list e.g. sleep(1)
 
+
+
+
+
+
+
+
+
+
     return #something
 
 # ---- Just a simple function to help w splitting
@@ -40,7 +49,7 @@ def list_index_splitter(length_list,chunks=1):
     for i in range(chunks):
         start = i*(len_chunks)
         if i == chunks-1:
-            end = -1
+            end = length_list 
         else:
             end = (i+1)*(len_chunks)-1
         inputs.append([start,end])
