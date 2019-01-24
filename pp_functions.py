@@ -5,6 +5,7 @@ import re
 import send2trash
 from glob import iglob
 import pickle
+import numpy as np
 
 def numbertorun(fits_folder,usr_input=True):
     MAX_NUM_FILES = 0
@@ -33,12 +34,11 @@ def path_clear_and_create(output_folder):
 
 def list_index_splitter(length_list,chunks=1):
     inputs = []
-    print('hello')
     len_chunks = int(length_list/chunks)
     for i in range(chunks):
         start = i*(len_chunks)
         if i == chunks-1:
-            end = -1
+            end = length_list
         else:
             end = (i+1)*(len_chunks)-1
         inputs.append([start,end])
@@ -83,10 +83,21 @@ def filename_data(filename=None):
     filetype = filename[-3:]
     return [plate_quality,chi_sq,subclass,unique_id,filetype]
 
-def flux_pprocessing(flux_values=None):
+def flux_pprocessing(flux_values=None,method='max'):
     if flux_values is None:
-        raise TypeError("Function requires 'flux_values,subclass_list' arrays as input (not None).")
-
+        raise TypeError("Function requires 'flux_values' arrays as input (not None).")
+    if method == 'div_max':
+        processed_flux = flux_values/np.max(flux_values)
+    elif method == 'div_median':
+        processed_flux = flux_values/np.median(flux_values)
+    elif method == 'div_mean':
+        processed_flux = flux_values/np.mean(flux_values)
+    elif method == 'minus_median':
+        processed_flux = flux_values-np.median(flux_values)
+    elif method == 'minus_median_div_max':
+        processed_flux = flux_values-np.median(flux_values)
+        processed_flux /= np.max(processed_flux)
+    return processed_flux
 # ------------------- POST 'MATRIX' CREATION ------------------
 
 def train_test_split():

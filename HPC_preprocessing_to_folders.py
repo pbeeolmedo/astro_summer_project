@@ -19,6 +19,7 @@ def hpc_pp2folder(list=[0,-1]):
 	UPPER_CUTOFF_LOGLAM = 3.95
 	SPECTRUM_LENGTH = 3599
 	LOGLAM_GRID = np.linspace(LOWER_CUTOFF_LOGLAM, UPPER_CUTOFF_LOGLAM, SPECTRUM_LENGTH)
+	np.save(f"{output_folder}/LOGLAM_GRID",np.array(LOGLAM_GRID))
 	i = start
 	for filename in glob.glob(f"{fits_folder}/*.fits")[start:end]:
 		i += 1

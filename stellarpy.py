@@ -8,7 +8,7 @@ import glob
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
-from pp_functions import filename_data
+from pp_functions import filename_data,flux_pprocessing
 
 class FluxMatrix(object):
     # Spectrum 2d
@@ -16,13 +16,15 @@ class FluxMatrix(object):
         if SEGUE_folder is None:
             raise FileNotFoundError("FITS file not specified")
         self.folder = SEGUE_folder
+        self.loglamgrid = np.load(f'{SEGUE_folder}/LOGLAM_GRID.npy')
         self.subclass_list = [f.name for f in os.scandir(self.folder) if (f.is_dir()) and (not re.match('Error.*',f.name))]
         self.subclass_hist_dict = Star.all_subclasses_dict
         for subclass in self.subclass_list:
             subclass_directory = f"{self.folder}/{subclass}/"
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],exclusion_list=[''],inclusion_list=[''],subclasses = None):
+    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],\
+                         exclusion_list=[''],inclusion_list=[''],subclasses=None,loglam=[0,3599],pp_method='div_max'):
         if subclasses is None:
             subclasses = self.subclass_list
         flux_values = []
@@ -31,6 +33,7 @@ class FluxMatrix(object):
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
         print(subclasses)
+
         for subclass in subclasses:
             i = 0
             if (subclass in exclusion_list):
@@ -48,15 +51,15 @@ class FluxMatrix(object):
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
                 [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
 
-                if (subclass not in inclusion_list) and (chi_sq > max_chisq) or (plate_quality not in plate_quality_choice):
+                if (subclass not in inclusion_list) and ((chi_sq > max_chisq) or (plate_quality not in plate_quality_choice)):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
                           f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
                     continue
 
                 flux_array = np.load(npy_file)
-                processed_flux_array = flux_array/np.max(flux_array) #comment out after ppfunc is done
-                #function :  processed_flux = flux_pprocessing(flux_interp,param1=4,param2=True)
-                flux_values.append(processed_flux_array)
+                #processed_flux_array = flux_array/np.max(flux_array) #comment out after ppfunc is done
+                processed_flux = flux_pprocessing(flux_array,method=pp_method)
+                flux_values.append(processed_flux[loglam[0]:loglam[1]])
                 subclass_list.append(subclass)
                 plate_ids_used.append(id)
                 i += 1
