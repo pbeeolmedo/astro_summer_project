@@ -1,7 +1,7 @@
 import pandas as pd
 import re
-df = pd.read_csv("../Data_Files/BStar_data.csv") # dataframe =>df
-speclist = open('speclist_bstars.txt','w')
+df = pd.read_csv("../Data_Files/A0pStar_Data.csv") # dataframe =>df
+speclist = open('speclist_a0pstars.txt','w')
 #names = df.columns.values
 #print(names)
 plate = df['plate']
