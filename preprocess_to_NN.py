@@ -77,7 +77,7 @@ for i in range(NUMBER_TO_RUN):
 				good_spec_info.append(df.iloc[[i]].values)
 				subclasses.append(subclass)
 				print("Subclass: "+subclass)
-				#shifted_spec_plotter(loglam_obs, flux, LOGLAM_GRID, normalised_flux)	
+				shifted_spec_plotter(loglam_obs, flux, LOGLAM_GRID, normalised_flux)	
 			else:
 				print("Bad wavelength Range")
 		else:

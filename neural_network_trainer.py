@@ -13,6 +13,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 import itertools
+from collections import Counter
 
 
 #Open pickle file containing spectra flux values and matching subclasses
@@ -22,7 +23,7 @@ with open ('data-17621-19-3.bin', 'rb') as training_data_file:
 #Create the flux and subclass label lists from the training data
 flux_values = training_data[0][:]
 subclasses = training_data[1]	
-	
+		
 X = np.array(flux_values)
 y = np.array(subclasses)
 
@@ -38,27 +39,19 @@ y_one_hot = []
 X_train, X_testing, y_train, y_testing = train_test_split(X[:len(X)], y_one_hot[:len(y_one_hot)], test_size=0.2, shuffle=True)
 X_val, X_test, y_val, y_test = train_test_split(X_testing, y_testing, test_size=0.2, shuffle=True)
 
-X_train = np.array(X_train)
-X_val = np.array(X_val)
-X_test = np.array(X_test)
+subclass_counter = dict(Counter(subclasses))
+print(subclass_counter)
 
-y_train = np.array(y_train)
-y_val = np.array(y_val)
-y_test = np.array(y_test)
+subclass_weights={}
+for k, v in subclass_counter.items():
+	if(v!=0):
+		print(k)
+		print(label_dict[k])
+		subclass_weights[label_dict[k]] = 1/v
+	else:
+		subclass_weights[label_dict[k]]=0
 
-X_train = X_train.reshape(X_train.shape[0], X_train.shape[1])
-X_val = X_val.reshape(X_val.shape[0], X_val.shape[1])
-X_test = X_test.reshape(X_test.shape[0], X_test.shape[1])
-
-# lr=[0.005]
-# batch_size=[100, 128, 150]
-# epochs=[200]
-# hu1=[100, 128, 150]
-# hu2=[32, 64, 100]
-# hu3=[32, 64, 100]
-# d1=[0.2, 0.25, 0.3]
-# d2=[0.2, 0.25, 0.3]
-# parameters = dict(lr=lr, batch_size=batch_size, epochs=epochs, hu1=hu1, hu2=hu2, hu3=hu3, d1=d1, d2=d2)
+print(subclass_weights)
 
 lr=0.0001
 batch_size=100
@@ -154,8 +147,20 @@ def plot_confusion_matrix(cm, classes,
 	
 plot_confusion_matrix(cm, classes=classes, normalize=True)
 plt.show()	
+
+# lr=[0.005]
+# batch_size=[100, 128, 150]
+# epochs=[200]
+# hu1=[100, 128, 150]
+# hu2=[32, 64, 100]
+# hu3=[32, 64, 100]
+# d1=[0.2, 0.25, 0.3]
+# d2=[0.2, 0.25, 0.3]
+# parameters = dict(lr=lr, batch_size=batch_size, epochs=epochs, hu1=hu1, hu2=hu2, hu3=hu3, d1=d1, d2=d2)
+
+
 # KC_model = KerasClassifier(build_fn=model, verbose=1)
-# grid = GridSearchCV(estimator=KC_model, param_grid=parameters, verbose=1)
+# grid = GridSearchCV(cv=3, estimator=KC_model, njobs=-1, param_grid=parameters, verbose=1)
 # grid_search = grid.fit(X_train, y_train)
 # print(grid_search.best_params_)
 # print(grid_search.best_score_)
