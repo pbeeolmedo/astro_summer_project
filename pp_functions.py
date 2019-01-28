@@ -54,12 +54,13 @@ def continuum_normalise(flux_values):
     return contNorm_flux_values
 
 def subclass_hist(dictionary,ordered_bin_labels,title='no input given',semi_log=False,png_file=None):
-    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=semi_log,zorder=3)
+    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=semi_log,zorder=3,color='orange')
     plt.xticks(range(len(dictionary)),ordered_bin_labels,rotation='vertical')
     plt.xlabel("Stellar Spectral Subclasses")
     plt.ylabel("Count")
     plt.title(f"Subclass Histogram: Number of Stars = {sum(dictionary.values())}: {title} ")
     plt.grid(which="both",color='lightgrey',zorder=0,ls='--')
+    if semi_log is True: plt.ylim(bottom=10**(0))
     if png_file is not None: plt.savefig(f"{png_file}-{sum(dictionary.values())}.png")
 
 def write2pickle(data2dump,filename2dump):

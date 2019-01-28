@@ -8,6 +8,13 @@ from pp_functions import filename_data,subclass_hist,write2pickle
 from sys import getsizeof
 import glob
 
+funweb_dict = {'B':8600,'A':123800,'F':2805300,'G':2784000,'K':77900+3260000,'M':84600}
+subclass_hist(funweb_dict,Star.all_classes,title='Funnel Web Simulated Distribution',semi_log=True,png_file='Small_Data_Files/FW_distribution')
+plt.show()
+
+
+
+'''
 path = 'Data_Files/SEGUE'
 #path = '/Volumes/Data_HDD/SEGUE'
 
@@ -48,7 +55,7 @@ print(plate_ids_used)
 subclass_hist(subclass_counter,Star.all_subclasses,'hello',False,f"Data_Files/{overall_count}-{preproc_method}-Histogram")
 plt.show()
 write2pickle(matrix,f"Data_Files/{overall_count}-{preproc_method}.bin")
-
+'''
 
 '''
 output = data.load_flux_matrix(min_files=1,max_files=100,max_chisq=2.0,subclasses=['F9'])
