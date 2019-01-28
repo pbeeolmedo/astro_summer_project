@@ -4,9 +4,16 @@ import glob
 from matplotlib import pyplot as plt
 
 numbertorun = 2
-filename = "/Users/Pablo/OneDrive - UNSW/4th Year/Summer Physics/Research/01_AstroProject_Main/Small_Data_Files/spec-3106-54714-0471.fits"
-t = Table.read(filename,hdu=1)
-print(t)
+filename = "/Users/Pablo/OneDrive - UNSW/4th Year/Summer Physics/Research/01_AstroProject_Main/Data_Files/Spectrum_files/spec-3105-54825-0060.fits"
+t1 = Table.read(filename,hdu=1)
+print(t1['flux'].data)
+t2 = Table.read(filename,hdu=2)
+print(t2.colnames)
+print(t2['ELODIE_TEFF'])
+print(t2['Z'])
+print(t2['ELODIE_Z'])
+print(t2['SUBCLASS'])
+print(t2['ELODIE_BV'])
 
 '''
 # Initialise
