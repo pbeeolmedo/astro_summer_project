@@ -54,7 +54,7 @@ def continuum_normalise(flux_values):
     return contNorm_flux_values
 
 def subclass_hist(dictionary,ordered_bin_labels,title='no input given',semi_log=False,png_file=None):
-    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=semi_log,zorder=3,color='orange')
+    plt.bar(range(len(dictionary)),list(dictionary.values()),align='center',log=semi_log,zorder=3)
     plt.xticks(range(len(dictionary)),ordered_bin_labels,rotation='vertical')
     plt.xlabel("Stellar Spectral Subclasses")
     plt.ylabel("Count")

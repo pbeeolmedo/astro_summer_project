@@ -9,12 +9,13 @@ from sys import getsizeof
 import glob
 
 funweb_dict = {'B':8600,'A':123800,'F':2805300,'G':2784000,'K':77900+3260000,'M':84600}
-subclass_hist(funweb_dict,Star.all_classes,title='Funnel Web Simulated Distribution',semi_log=True,png_file='Small_Data_Files/FW_distribution')
+segue_dict = {'B':42+26,'A':12255+158,'F':4772+25682+25683,'G':3786+9680,'K':5027+9443+10000+2868,'M':316+1+80+72+103+79+21+4+1}
+subclass_hist(segue_dict,Star.all_classes,title='SEGUE Distribution',semi_log=True,png_file='Small_Data_Files/SG_distribution')
 plt.show()
 
 
 
-'''
+
 path = 'Data_Files/SEGUE'
 #path = '/Volumes/Data_HDD/SEGUE'
 
@@ -25,14 +26,14 @@ subclasses = data.subclass_list
 print(data.loglamgrid)
 print(len(data.loglamgrid))
 
-'''
+
 LOWER_CUTOFF_LOGLAM = 3.59
 UPPER_CUTOFF_LOGLAM = 3.95
 SPECTRUM_LENGTH = 3599
 #LOGLAM_GRID = np.linspace(LOWER_CUTOFF_LOGLAM, UPPER_CUTOFF_LOGLAM, SPECTRUM_LENGTH)
 a = np.load('LOGLAM_GRID.npy')
 print(a)
-'''
+
 # ------- Histogram Plot----------------
 
 print(data.subclass_hist_dict)
@@ -55,7 +56,7 @@ print(plate_ids_used)
 subclass_hist(subclass_counter,Star.all_subclasses,'hello',False,f"Data_Files/{overall_count}-{preproc_method}-Histogram")
 plt.show()
 write2pickle(matrix,f"Data_Files/{overall_count}-{preproc_method}.bin")
-'''
+
 
 '''
 output = data.load_flux_matrix(min_files=1,max_files=100,max_chisq=2.0,subclasses=['F9'])
