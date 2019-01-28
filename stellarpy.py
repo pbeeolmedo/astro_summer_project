@@ -23,7 +23,7 @@ class FluxMatrix(object):
             subclass_directory = f"{self.folder}/{subclass}/"
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,max_chisq=9,plate_quality_choice=[1,0],\
+    def load_flux_matrix(self,min_files=1,max_files=99999,min_chisq=0,max_chisq=9,plate_quality_choice=[1,0],\
                          exclusion_list=[''],inclusion_list=[''],subclasses=None,loglam=[0,3599],pp_method='div_max'):
         if subclasses is None:
             subclasses = self.subclass_list
@@ -51,9 +51,9 @@ class FluxMatrix(object):
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
                 [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
 
-                if (subclass not in inclusion_list) and ((chi_sq > max_chisq) or (plate_quality not in plate_quality_choice)):
+                if (subclass not in inclusion_list) and (not (min_chisq<chi_sq<max_chisq) or (plate_quality not in plate_quality_choice)):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
-                          f"X^2 max is {max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
+                          f"X^2 range is {min_chisq}:{max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
                     continue
 
                 flux_array = np.load(npy_file)

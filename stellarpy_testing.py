@@ -35,13 +35,13 @@ plt.show()
 
 print(subclasses)
 
-inclusion_list = [ s for s in subclasses if s.startswith('M')]
-inclusion_list.append('B6')
-inclusion_list.append('B9')
-inclusion_list.append('Carbon')
-preproc_method = 'div_max'
-[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,200,1.5,[1],['CV'],inclusion_list,\
-                                                        pp_method=preproc_method,loglam=[1800,len(data.loglamgrid)])
+inclusion_list1 = [ s for s in subclasses if s.startswith('B')]
+exclusion_list1 = [ s for s in subclasses if s.startswith('M')]
+exclusion_list1 += ['CV','Carbon','WD','STARFORMING']
+
+preproc_method = 'minus_median'
+[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(5,102,min_chisq=1.6,max_chisq=3.5,exclusion_list=exclusion_list1,\
+                                                    inclusion_list=inclusion_list1,pp_method=preproc_method,loglam=[436,2228])
 print(matrix)
 print(subclass_counter)
 print(plate_ids_used)

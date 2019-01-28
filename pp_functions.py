@@ -40,7 +40,7 @@ def list_index_splitter(length_list,chunks=1):
         if i == chunks-1:
             end = length_list
         else:
-            end = (i+1)*(len_chunks)-1
+            end = (i+1)*(len_chunks)
         inputs.append([start,end])
     return inputs
 

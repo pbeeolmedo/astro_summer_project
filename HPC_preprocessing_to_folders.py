@@ -10,7 +10,7 @@ from pp_functions import chisq_for_filename,path_clear_and_create,numbertorun,li
 def hpc_pp2folder(list=[0,-1]):
 	fits_folder="/Volumes/Data_HDD/Spectra"
 	#fits_folder = "Data_Files/Spectrum_Files"
-	output_folder="/Users/Pablo/Desktop/SEGUE"
+	output_folder = "Data_Files/SEGUE"
 	error_folder_name = f"{output_folder}/Error"
 	start = list[0]
 	end = list[1]
@@ -50,16 +50,16 @@ fits_folder="/Volumes/Data_HDD/Spectra"
 #fits_folder = "Data_Files/Spectrum_Files"
 
 #output_folder = "/Volumes/Data_HDD/SEGUE"
-#output_folder = "Data_Files/SEGUE"
+output_folder = "Data_Files/SEGUE"
 
-output_folder="/Users/Pablo/Desktop/SEGUE"
+#output_folder="/Users/Pablo/Desktop/SEGUE"
 error_folder_name = path_clear_and_create(output_folder)
 
 numFiles = numbertorun(fits_folder,False)
-inputs = list_index_splitter(numFiles,8)
+inputs = list_index_splitter(numFiles,12)
 print(inputs)
 num_cores = multiprocessing.cpu_count()
 
-Parallel(n_jobs=num_cores-1)(delayed(hpc_pp2folder)(i) for i in inputs)
+Parallel(n_jobs=num_cores)(delayed(hpc_pp2folder)(i) for i in inputs)
 
 # Useful lines/prints for debugging/ troubleshooting --------------

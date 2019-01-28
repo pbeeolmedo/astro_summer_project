@@ -49,9 +49,9 @@ def list_index_splitter(length_list,chunks=1):
     for i in range(chunks):
         start = i*(len_chunks)
         if i == chunks-1:
-            end = length_list 
+            end = length_list
         else:
-            end = (i+1)*(len_chunks)-1
+            end = (i+1)*(len_chunks)
         inputs.append([start,end])
     return inputs
 inputs = list_index_splitter(numIters,numChuncks)
