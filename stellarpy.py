@@ -80,7 +80,7 @@ class Star(object):
         self.hdu1 = Table.read(self.filename,hdu=1)
         self.hdu2 = Table.read(self.filename,hdu=2)
 
-    all_classes = ["O","B","A","F","G","K","M","L"]
+    all_classes = ["B","A","F","G","K","M"]
     all_subclasses = ['O','OB','B6','B9','A0','A0p','F2','F5','F9','G0','G2','G5','K1','K3','K5',\
                       'K7','M0','M0V','M1','M2','M2V','M3','M4','M5','M6','M7','M8','L0','L1','L2','L3',\
                       'L4','L5','L5.5','L9','T2','Carbon','WD','CV','STARFORMING']

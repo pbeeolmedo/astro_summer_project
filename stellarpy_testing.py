@@ -9,6 +9,8 @@ from sys import getsizeof
 import glob
 
 funweb_dict = {'B':8600,'A':123800,'F':2805300,'G':2784000,'K':77900+3260000,'M':84600}
+subclass_hist(funweb_dict,Star.all_classes,title='Funnel Web Distribution',semi_log=True,png_file='Small_Data_Files/FW_distribution',colour='orange')
+plt.show()
 segue_dict = {'B':42+26,'A':12255+158,'F':4772+25682+25683,'G':3786+9680,'K':5027+9443+10000+2868,'M':316+1+80+72+103+79+21+4+1}
 subclass_hist(segue_dict,Star.all_classes,title='SEGUE Distribution',semi_log=True,png_file='Small_Data_Files/SG_distribution')
 plt.show()
