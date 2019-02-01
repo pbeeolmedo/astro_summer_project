@@ -76,13 +76,15 @@ def filename_data(filename=None):
     if filename is None:
         raise FileNotFoundError("Filename not specified")
     plate_quality = int(filename[0])
-    chi_sq_integer = int(filename[2:4])
-    chi_sq_decimal = int(filename[5:7])
-    chi_sq = chi_sq_integer+(chi_sq_decimal/100)
-    subclass = re.match('([^_]*)',filename[8:]).group(0)
-    unique_id = filename[-19:-4]
+    print(filename[:-4])
+    match = re.findall("_([^_]*)",filename[:-4])
+    chi_sq = match[0].split("-")
+    chi_sq = int(chi_sq[0])+(int(chi_sq[1])/100)
+    subclass = match[1]
+    unique_id = match[2]
+    copy_num = int(match[3])
     filetype = filename[-3:]
-    return [plate_quality,chi_sq,subclass,unique_id,filetype]
+    return [plate_quality,chi_sq,subclass,unique_id,copy_num,filetype]
 
 def flux_pprocessing(flux_values=None,method='max'):
     if flux_values is None:

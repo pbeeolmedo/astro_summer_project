@@ -4,16 +4,36 @@ import glob
 from matplotlib import pyplot as plt
 
 numbertorun = 2
-filename = "/Users/Pablo/OneDrive - UNSW/4th Year/Summer Physics/Research/01_AstroProject_Main/Data_Files/Spectrum_files/spec-3105-54825-0060.fits"
+filename = "Data_Files/Spectrum_files/spec-3105-54825-0170.fits"
 t1 = Table.read(filename,hdu=1)
-print(t1['flux'].data)
+print(t1.colnames)
+
+flux = t1['flux'].data
+print(type(flux))
+print(f"Flux is :{flux}")
+ivar = t1['ivar'].data
+print(f"Ivar is :{ivar}")
+avg_ivar = np.mean(ivar)
+ivar[np.isin(ivar,0.)]=avg_ivar
+
+sigmas = np.sqrt(1/ivar)
+print(f"Std = {sigmas}")
+
+noise = np.random.normal(0, sigmas)
+flux_w_noise = flux + noise
+print(f"Flux and noise is : {flux_w_noise}")
+
+flux_w_noise2 = flux + np.random.normal(0, np.sqrt(1/ivar))
+print(f"Flux and noise is : {flux_w_noise2}")
 t2 = Table.read(filename,hdu=2)
+
 print(t2.colnames)
 print(t2['ELODIE_TEFF'])
 print(t2['Z'])
-print(t2['ELODIE_Z'])
-print(t2['SUBCLASS'])
-print(t2['ELODIE_BV'])
+t3 = Table.read(filename,hdu=3)
+print(t3.colnames)
+
+
 
 '''
 # Initialise

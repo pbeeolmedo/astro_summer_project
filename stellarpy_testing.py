@@ -8,17 +8,17 @@ from pp_functions import filename_data,subclass_hist,write2pickle
 from sys import getsizeof
 import glob
 
-funweb_dict = {'B':8600,'A':123800,'F':2805300,'G':2784000,'K':77900+3260000,'M':84600}
-subclass_hist(funweb_dict,Star.all_classes,title='Funnel Web Distribution',semi_log=True,png_file='Small_Data_Files/FW_distribution',colour='orange')
-plt.show()
-segue_dict = {'B':42+26,'A':12255+158,'F':4772+25682+23683,'G':3786+9680,'K':5027+9443+10000+2868,'M':316+1+80+72+103+79+21+4+1}
-subclass_hist(segue_dict,Star.all_classes,title='SEGUE Distribution',semi_log=True,png_file='Small_Data_Files/SG_distribution')
-plt.show()
+#funweb_dict = {'B':8600,'A':123800,'F':2805300,'G':2784000,'K':77900+3260000,'M':84600}
+#subclass_hist(funweb_dict,Star.all_classes,title='Funnel Web Distribution',semi_log=True,png_file='Small_Data_Files/FW_distribution',colour='orange')
+#plt.show()
+#segue_dict = {'B':42+26,'A':12255+158,'F':4772+25682+23683,'G':3786+9680,'K':5027+9443+10000+2868,'M':316+1+80+72+103+79+21+4+1}
+#subclass_hist(segue_dict,Star.all_classes,title='SEGUE Distribution',semi_log=True,png_file='Small_Data_Files/SG_distribution')
+#plt.show()
 
 
-exit()
 
-path = 'Data_Files/SEGUE'
+#path = 'Data_Files/SEGUE'
+path = "/Users/Pablo/Desktop/SEGUE"
 #path = '/Volumes/Data_HDD/SEGUE'
 
 
@@ -45,17 +45,20 @@ plt.show()
 
 print(subclasses)
 
-inclusion_list1 = [ s for s in subclasses if s.startswith('B')]
-exclusion_list1 = [ s for s in subclasses if s.startswith('M')]
-exclusion_list1 += ['CV','Carbon','WD','STARFORMING']
+#inclusion_list1 = [ s for s in subclasses if s.startswith('M')]
+
+#exclusion_list1 = [ s for s in subclasses if s.startswith('M') or s.startswith('A') or s.startswith('B')]
+#exclusion_list1 += ['CV','Carbon','WD','STARFORMING']
+
+subclass_list1 = [ s for s in subclasses if s.startswith('K')]
 
 preproc_method = 'minus_median'
-[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(5,102,min_chisq=1.6,max_chisq=3.5,exclusion_list=exclusion_list1,\
-                                                    inclusion_list=inclusion_list1,pp_method=preproc_method,loglam=[436,2228])
+[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,1000,min_chisq=0,max_chisq=3.0,exclusion_list=[''],\
+                                                    inclusion_list=[''],pp_method=preproc_method,subclasses=subclass_list1)
 print(matrix)
 print(subclass_counter)
 print(plate_ids_used)
-subclass_hist(subclass_counter,Star.all_subclasses,'hello',False,f"Data_Files/{overall_count}-{preproc_method}-Histogram")
+subclass_hist(subclass_counter,Star.all_subclasses,preproc_method,False,f"Data_Files/{overall_count}-{preproc_method}-Histogram")
 plt.show()
 write2pickle(matrix,f"Data_Files/{overall_count}-{preproc_method}.bin")
 

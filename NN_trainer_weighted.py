@@ -11,6 +11,8 @@ from sklearn.decomposition import PCA
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import itertools
 from collections import Counter
@@ -21,12 +23,12 @@ from itertools import product
 
 
 #Open pickle file containing spectra flux values and matching subclasses
-with open ('Data_Files/data-22036-20-3.bin', 'rb') as training_data_file:
+with open ('Data_Files/10121-minus_median.bin', 'rb') as training_data_file:
     training_data = pickle.load(training_data_file)
 
 #Create the flux and subclass label lists from the training data
 flux_values = training_data[0][:]
-subclasses = training_data[1]	
+subclasses = training_data[1]
 
 
 
@@ -58,11 +60,11 @@ for k, v in subclass_counter.items():
 		subclass_weights[label_dict[k]]=0
 
 print(label_dict)
-		
+
 subclass_weights = {2: 10, 17: 10, 18: 10, 3: 33, 1: 3, 14: 3.1, 15:20,
-					16: 14, 19: 32, 0:1, 5: 1, 6:1, 7:1, 
+					16: 14, 19: 32, 0:1, 5: 1, 6:1, 7:1,
 					8: 1, 9:1, 10:1, 11:1,12:1,13:1, 4:10, 20:10}
-		
+
 #sk_class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
 #sk_class_weight_dict = dict(enumerate(sk_class_weights))
 #print(label_dict)
@@ -81,18 +83,18 @@ def model():
 	model=Sequential()
 	model.add(Dense(hu1, activation='relu', input_dim=X_train.shape[1]))
 	model.add(Dropout(d1))
-	#model.add(Dense(hu2, activation='relu'))
+	model.add(Dense(hu2, activation='relu'))
 	model.add(Dropout(d2))
 	model.add(Dense(len(unique_labels), activation='softmax'))
 	model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 	return model
 
-#Define early stopping callback 
+#Define early stopping callback
 es = EarlyStopping(monitor='val_loss',
                               min_delta=0,
                               patience=10,
                               verbose=1, mode='auto')
-	
+
 #Run the model
 model = model()
 model.summary()
@@ -160,7 +162,7 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 plot_confusion_matrix(cm, classes=classes, normalize=True)
-plt.show()	
+plt.show()
 
 # lr=[0.005]
 # batch_size=[100, 128, 150]
@@ -178,4 +180,3 @@ plt.show()
 # grid_search = grid.fit(X_train, y_train)
 # print(grid_search.best_params_)
 # print(grid_search.best_score_)
-
