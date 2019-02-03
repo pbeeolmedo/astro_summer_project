@@ -76,7 +76,6 @@ def filename_data(filename=None):
     if filename is None:
         raise FileNotFoundError("Filename not specified")
     plate_quality = int(filename[0])
-    print(filename[:-4])
     match = re.findall("_([^_]*)",filename[:-4])
     chi_sq = match[0].split("-")
     chi_sq = int(chi_sq[0])+(int(chi_sq[1])/100)

@@ -25,12 +25,14 @@ class FluxMatrix(object):
             self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
 
     def load_flux_matrix(self,min_files=1,max_files=99999,min_chisq=0,max_chisq=9,plate_quality_choice=[1,0],\
-                         exclusion_list=[''],inclusion_list=[''],subclasses=None,loglam=[0,3599],pp_method='div_max'):
+                         exclusion_list=[''],inclusion_list=[''],subclasses=None,loglam=[0,3599],pp_method='div_max',\
+                         range_copy_num = [0,1000]):
         if subclasses is None:
             subclasses = self.subclass_list
         flux_values = []
         subclass_list =[]
         plate_ids_used = []
+        copy_bool = []
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
         print(subclasses)
@@ -55,23 +57,26 @@ class FluxMatrix(object):
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
                 [plate_quality,chi_sq,subclass,id,copy_num,filetype] = filename_data(filename)
 
+                if not (range_copy_num[0] <= copy_num <= range_copy_num[1]):
+                    continue
+
                 if (subclass not in inclusion_list) and (not (min_chisq<chi_sq<max_chisq) or (plate_quality not in plate_quality_choice)):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
                           f"X^2 range is {min_chisq}:{max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
                     continue
 
                 flux_array = np.load(npy_file)
-                #processed_flux_array = flux_array/np.max(flux_array) #comment out after ppfunc is done
                 processed_flux = flux_pprocessing(flux_array,method=pp_method)
                 flux_values.append(processed_flux[loglam[0]:loglam[1]])
                 subclass_list.append(subclass)
                 plate_ids_used.append(id)
+                copy_bool.append(bool(copy_num))
                 i += 1
                 if overall_count%50 == 0 : print(f"Overall count is {overall_count}")
                 overall_count += 1
                 subclass_counter[subclass] += 1
 
-            matrix = [flux_values,subclass_list]
+            matrix = [flux_values,subclass_list,copy_bool]
         return [matrix,overall_count,subclass_counter,plate_ids_used]
 
 
