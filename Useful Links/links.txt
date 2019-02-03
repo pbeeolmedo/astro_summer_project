@@ -10,4 +10,6 @@ SDSS/SEGUE stellar spectra are processed through the SEGUE Stellar Parameter
 Pipeline (SSPP), and three primary stellar parameters, effective temperature (Teff),
 surface gravity (log g), and metallicity ([Fe/H]) are reported for most stars in the
 temperature range 4000 - 10,000 K and with spectral S/N ratios exceeding 10/1.
-http://www.sdss3.org/dr8/spectro/sspp.php 
+http://www.sdss3.org/dr8/spectro/sspp.php
+
+http://www.marinamele.com/7-tips-to-time-python-scripts-and-control-memory-and-cpu-usage

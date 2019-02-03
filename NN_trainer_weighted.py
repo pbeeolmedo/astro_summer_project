@@ -11,6 +11,8 @@ from sklearn.decomposition import PCA
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import itertools
 from collections import Counter
@@ -27,7 +29,7 @@ with open ('Data_Files/10121-minus_median.bin', 'rb') as training_data_file:
 
 #Create the flux and subclass label lists from the training data
 flux_values = training_data[0][:]
-subclasses = training_data[1]	
+subclasses = training_data[1]
 
 X = np.array(flux_values)
 y = np.array(subclasses)
@@ -80,6 +82,7 @@ unique_train, counts_train = np.unique(y_train, return_counts=True)
 unique_val, counts_val = np.unique(y_val, return_counts=True)
 unique_test, counts_test = np.unique(y_test, return_counts=True)
 print(label_dict)
+<<<<<<< HEAD
 print(f"Train count: \n {unique_train} \n {counts_train}")
 print(f"Val count: \n {unique_val} \n {counts_val}")
 print(f"Test count: \n {unique_test} \n {counts_test}")
@@ -87,6 +90,21 @@ print(f"Test count: \n {unique_test} \n {counts_test}")
 lr=0.0001
 batch_size=150
 epochs=200
+=======
+
+subclass_weights = {2: 10, 17: 10, 18: 10, 3: 33, 1: 3, 14: 3.1, 15:20,
+					16: 14, 19: 32, 0:1, 5: 1, 6:1, 7:1,
+					8: 1, 9:1, 10:1, 11:1,12:1,13:1, 4:10, 20:10}
+
+#sk_class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
+#sk_class_weight_dict = dict(enumerate(sk_class_weights))
+#print(label_dict)
+#print(sk_class_weight_dict)
+
+lr=0.00009
+batch_size=128
+epochs=500
+>>>>>>> c988bb4e79d63b96e335896b3384f907cdc98924
 hu1=512
 hu2=128
 hu3=32
@@ -104,12 +122,12 @@ def model():
 	model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 	return model
 
-#Define early stopping callback 
+#Define early stopping callback
 es = EarlyStopping(monitor='val_loss',
                               min_delta=0,
                               patience=10,
                               verbose=1, mode='auto')
-	
+
 #Run the model
 model = model()
 model.summary()
@@ -176,8 +194,13 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
+<<<<<<< HEAD
 plot_confusion_matrix(cm, classes=classes, normalize=False)
 plt.show()	
+=======
+plot_confusion_matrix(cm, classes=classes, normalize=True)
+plt.show()
+>>>>>>> c988bb4e79d63b96e335896b3384f907cdc98924
 
 # lr=[0.005]
 # batch_size=[100, 128, 150]
@@ -195,4 +218,3 @@ plt.show()
 # grid_search = grid.fit(X_train, y_train)
 # print(grid_search.best_params_)
 # print(grid_search.best_score_)
-

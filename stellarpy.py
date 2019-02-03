@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 from pp_functions import filename_data,flux_pprocessing
+from random import shuffle
 
 class FluxMatrix(object):
     # Spectrum 2d
@@ -43,13 +44,16 @@ class FluxMatrix(object):
                 print(f"{subclass}: Omitted : {self.subclass_hist_dict[subclass]} files but " +
                       f"minimum = {min_files}")
                 continue
-            for npy_file in glob.iglob(f"{self.folder}/{subclass}/*.npy"):
+            subclass_folder_npy_files = glob.glob(f"{self.folder}/{subclass}/*.npy")
+            shuffle(subclass_folder_npy_files)
+            #print(subclass_folder_npy_files[0:7])
+            for npy_file in subclass_folder_npy_files:
                 if i == max_files:
                     print(f"{subclass}: Iteration number {i} and max is {max_files} ")
                     break
 
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
-                [plate_quality,chi_sq,subclass,id,filetype] = filename_data(filename)
+                [plate_quality,chi_sq,subclass,id,copy_num,filetype] = filename_data(filename)
 
                 if (subclass not in inclusion_list) and (not (min_chisq<chi_sq<max_chisq) or (plate_quality not in plate_quality_choice)):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
@@ -133,6 +137,10 @@ class Star(object):
     @property
     def flux(self):
         return self.hdu1['flux'].data
+
+    @property
+    def ivar(self):
+        return self.hdu1['ivar'].data
 
     # Other
     @property
