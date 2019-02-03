@@ -19,21 +19,20 @@ from functools import partial
 import keras.backend as K
 from itertools import product
 
+TEST_SPLIT=0.2
 
 #Open pickle file containing spectra flux values and matching subclasses
-with open ('Data_Files/data-22036-20-3.bin', 'rb') as training_data_file:
+with open ('Data_Files/10121-minus_median.bin', 'rb') as training_data_file:
     training_data = pickle.load(training_data_file)
 
 #Create the flux and subclass label lists from the training data
 flux_values = training_data[0][:]
 subclasses = training_data[1]	
 
-
-
 X = np.array(flux_values)
 y = np.array(subclasses)
-
-
+	
+	
 #One hot encode the spectral class labels
 unique_labels = set(subclasses)
 encoder = LabelEncoder()
@@ -43,36 +42,54 @@ y_encoded = []
 [y_encoded.append(label_dict[label]) for label in y]
 y_encoded=np.array(y_encoded)
 
-#Split data into training, validation and testing sets
-X_train, X_testing, y_train, y_testing = train_test_split(X[:len(X)], y_encoded[:len(y_encoded)], test_size=0.2, shuffle=True)
-X_val, X_test, y_val, y_test = train_test_split(X_testing, y_testing, test_size=0.2, shuffle=True)
-
-subclass_counter = dict(Counter(subclasses))
-print(subclass_counter)
-
-subclass_weights={}
-for k, v in subclass_counter.items():
-	if(v!=0):
-		subclass_weights[label_dict[k]] = 1/v
+new_y = []
+for y_class in y:
+	if 'A' or 'B' in y:
+		new_y.append(y_class)
 	else:
-		subclass_weights[label_dict[k]]=0
+		new_y.append('Other')
+	
+unique, counts = np.unique(y, return_counts=True)
 
+X_train=[]
+y_train=[]
+X_val=[]
+y_val=[]
+X_test=[]
+y_test=[]
+for subclass in unique:
+	mask = np.isin(y, subclass)
+	training_flux, X_testing, y_training_flux, y_testing = train_test_split(X[mask], y_encoded[mask], test_size=TEST_SPLIT, shuffle=True)
+	X_train.extend(training_flux)
+	y_train.extend(y_training_flux)
+	
+	X_val_flux, X_test_flux, y_val_flux, y_test_flux = train_test_split(X_testing, y_testing, test_size=TEST_SPLIT, shuffle=True)
+	X_val.extend(X_val_flux)
+	y_val.extend(y_val_flux)
+	X_test.extend(X_test_flux)
+	y_test.extend(y_test_flux)
+
+X_train = np.array(X_train)
+y_train = np.array(y_train)
+X_val = np.array(X_val)
+y_val = np.array(y_val)
+X_test = np.array(X_test)
+y_test = np.array(y_test)
+
+unique_train, counts_train = np.unique(y_train, return_counts=True)
+unique_val, counts_val = np.unique(y_val, return_counts=True)
+unique_test, counts_test = np.unique(y_test, return_counts=True)
 print(label_dict)
-		
-subclass_weights = {2: 10, 17: 10, 18: 10, 3: 33, 1: 3, 14: 3.1, 15:20,
-					16: 14, 19: 32, 0:1, 5: 1, 6:1, 7:1, 
-					8: 1, 9:1, 10:1, 11:1,12:1,13:1, 4:10, 20:10}
-		
-#sk_class_weights = class_weight.compute_class_weight('balanced', np.unique(y), y)
-#sk_class_weight_dict = dict(enumerate(sk_class_weights))
-#print(label_dict)
-#print(sk_class_weight_dict)
+print(f"Train count: \n {unique_train} \n {counts_train}")
+print(f"Val count: \n {unique_val} \n {counts_val}")
+print(f"Test count: \n {unique_test} \n {counts_test}")
 
-lr=0.00009
-batch_size=128
-epochs=500
+lr=0.0001
+batch_size=150
+epochs=200
 hu1=512
 hu2=128
+hu3=32
 d1=0.2
 d2=0.1
 
@@ -81,7 +98,7 @@ def model():
 	model=Sequential()
 	model.add(Dense(hu1, activation='relu', input_dim=X_train.shape[1]))
 	model.add(Dropout(d1))
-	#model.add(Dense(hu2, activation='relu'))
+	model.add(Dense(hu2, activation='relu'))
 	model.add(Dropout(d2))
 	model.add(Dense(len(unique_labels), activation='softmax'))
 	model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -159,7 +176,7 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
-plot_confusion_matrix(cm, classes=classes, normalize=True)
+plot_confusion_matrix(cm, classes=classes, normalize=False)
 plt.show()	
 
 # lr=[0.005]

@@ -76,13 +76,13 @@ subclass_weights = {2: 10, 17: 10, 18: 10, 3: 33, 1: 3, 14: 3.1, 15:20,
 #print(label_dict)
 #print(sk_class_weight_dict)
 
-lr=0.0002
+lr=0.0001
 batch_size=100
-epochs=150
+epochs=100
 hu1=256
 hu2=128
-d1=0.25
-d2=0.25
+d1=0.20
+d2=0.10
 
 #Define the neural network model
 def model():
