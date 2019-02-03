@@ -11,7 +11,7 @@ def hpc_pp2folder(list=[0,-1]):
 	fits_folder="/Volumes/Data_HDD/Spectra"
 	#fits_folder = "Data_Files/Spectrum_Files"
 	output_folder = "Data_Files/SEGUE"
-	output_folder="/Users/Pablo/Desktop/SEGUE"
+	#output_folder="/Users/Pablo/Desktop/SEGUE"
 	error_folder_name = f"{output_folder}/Error"
 	start = list[0]
 	end = list[1]
@@ -38,13 +38,14 @@ def hpc_pp2folder(list=[0,-1]):
 
 		if np.min(star.loglam_restframe) <= LOWER_CUTOFF_LOGLAM and np.max(star.loglam_restframe) >= UPPER_CUTOFF_LOGLAM:
 			flux = star.flux
-			flux_interp = np.interp(LOGLAM_GRID, star.loglam_restframe, flux) #chnage here
-			np.save(f"{directory}{filename2dump}_0",np.array(processed_interp))
+			flux_interp = np.interp(LOGLAM_GRID, star.loglam_restframe, flux) #chnage
+			np.save(f"{directory}{filename2dump}_0",np.array(flux_interp))
 			print(f"{i}|Subclass:{spectral_subclass}")
-			if spectral_subclass in ['B6','B9','M0','M1','M2','M3','M4','M5','M6','M7']:
+			augment_dict = {'B6':100,'B9':100,'A0p':10,'M0':10,'M1':30,'M2':30,'M3':30,'M4':30,'M5':100,'M6':200,'WD':100}
+			if spectral_subclass in augment_dict.keys():
 				ivar = star.ivar
 				ivar[np.isin(ivar,0.)] = np.mean(star.ivar)
-				for j in range(10):
+				for j in range(augment_dict[spectral_subclass]):
 					flux_w_noise = flux + np.random.normal(0, np.sqrt(1/ivar))
 					flux_interp = np.interp(LOGLAM_GRID, star.loglam_restframe, flux_w_noise)
 					np.save(f"{directory}/{filename2dump}_{j+1}",np.array(flux_interp))
@@ -60,7 +61,7 @@ fits_folder="/Volumes/Data_HDD/Spectra"
 #output_folder = "/Volumes/Data_HDD/SEGUE"
 output_folder = "Data_Files/SEGUE"
 
-output_folder="/Users/Pablo/Desktop/SEGUE"
+#output_folder="/Users/Pablo/Desktop/SEGUE"
 
 error_folder_name = path_clear_and_create(output_folder)
 

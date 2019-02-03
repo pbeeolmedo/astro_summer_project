@@ -17,8 +17,8 @@ import glob
 
 
 
-#path = 'Data_Files/SEGUE'
-path = "/Users/Pablo/Desktop/SEGUE"
+path = 'Data_Files/SEGUE'
+#path = "/Users/Pablo/Desktop/SEGUE"
 #path = '/Volumes/Data_HDD/SEGUE'
 
 
@@ -44,17 +44,17 @@ plt.show()
 
 
 print(subclasses)
-
 #inclusion_list1 = [ s for s in subclasses if s.startswith('M')]
 
 #exclusion_list1 = [ s for s in subclasses if s.startswith('M') or s.startswith('A') or s.startswith('B')]
 #exclusion_list1 += ['CV','Carbon','WD','STARFORMING']
 
-subclass_list1 = [ s for s in subclasses if s.startswith('K')]
+subclass_list1 = [ s for s in subclasses if s.startswith('M')]
 
 preproc_method = 'minus_median'
-[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,1000,min_chisq=0,max_chisq=3.0,exclusion_list=[''],\
-                                                    inclusion_list=[''],pp_method=preproc_method,subclasses=subclass_list1)
+[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,3000,min_chisq=0,max_chisq=3.65,exclusion_list=[''],\
+                                                    inclusion_list=[''],pp_method=preproc_method,subclasses=subclass_list1,\
+                                                    )
 print(matrix)
 print(subclass_counter)
 print(plate_ids_used)
