@@ -1,9 +1,9 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, LabelBinarizer
 
-def equal_class_splitter(X, y, show_counts=False, test_split=0.2):
-	unique_labels, y_encoded, label_dict, unique, counts = label_encoder(y)
+def equal_class_splitter(X, y, show_counts=False, test_split=0.2, encoding="label"):
+	unique_labels, y_encoded, label_dict, unique, counts, loss_function = label_encoder(y, encoding)
 	X_train=[]
 	y_train=[]
 	X_val=[]
@@ -38,15 +38,21 @@ def equal_class_splitter(X, y, show_counts=False, test_split=0.2):
 		print(f"Val count: \n {unique_val} \n {counts_val}")
 		print(f"Test count: \n {unique_test} \n {counts_test}")
 		
-	return (X_train, y_train, X_val, y_val, X_test, y_test, unique_labels, label_dict)
+	return (X_train, y_train, X_val, y_val, X_test, y_test, unique_labels, label_dict, loss_function)
 
-def label_encoder(y):
+def label_encoder(y, encoding):
 	unique_labels = set(y)
-	encoder = LabelEncoder()
+	loss_function=''
+	if encoding=="label":
+		encoder = LabelEncoder()
+		loss_function = "sparse_categorical_crossentropy"
+	else:
+		encoder = LabelBinarizer()
+		loss_function = "categorical_crossentropy"
 	encoded_labels = encoder.fit_transform(list(unique_labels))
 	label_dict = dict(zip(unique_labels, encoded_labels))
 	y_encoded = []
 	[y_encoded.append(label_dict[label]) for label in y]
 	y_encoded=np.array(y_encoded)
 	unique, counts = np.unique(y, return_counts=True)
-	return unique_labels, y_encoded, label_dict, unique, counts
+	return unique_labels, y_encoded, label_dict, unique, counts, loss_function
