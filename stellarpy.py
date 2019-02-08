@@ -22,17 +22,17 @@ class FluxMatrix(object):
         self.subclass_hist_dict = Star.all_subclasses_dict
         for subclass in self.subclass_list:
             subclass_directory = f"{self.folder}/{subclass}/"
-            self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*.npy'))
+            self.subclass_hist_dict[subclass] = len(fnmatch.filter(os.listdir(subclass_directory), '*_0.npy'))
 
-    def load_flux_matrix(self,min_files=1,max_files=99999,min_chisq=0,max_chisq=9,plate_quality_choice=[1,0],\
+    def load_flux_matrix(self,min_files=1,max_files=99999,min_chisq=0,max_chisq=99,plate_quality_choice=[1,0],\
                          exclusion_list=[''],inclusion_list=[''],subclasses=None,loglam=[0,3599],pp_method='div_max',\
-                         range_copy_num = [0,1000]):
+                         copies = 6):
         if subclasses is None:
             subclasses = self.subclass_list
         flux_values = []
         subclass_list =[]
         plate_ids_used = []
-        copy_bool = []
+        chi_sq_values = []
         overall_count = 0
         subclass_counter = dict(zip(self.subclass_hist_dict.keys(),[0]*len(self.subclass_hist_dict))) # setting all vals to zero
         print(subclasses)
@@ -46,37 +46,49 @@ class FluxMatrix(object):
                 print(f"{subclass}: Omitted : {self.subclass_hist_dict[subclass]} files but " +
                       f"minimum = {min_files}")
                 continue
-            subclass_folder_npy_files = glob.glob(f"{self.folder}/{subclass}/*.npy")
+            subclass_folder_npy_files = glob.glob(f"{self.folder}/{subclass}/*_0.npy")
             shuffle(subclass_folder_npy_files)
             #print(subclass_folder_npy_files[0:7])
             for npy_file in subclass_folder_npy_files:
-                if i == max_files:
-                    print(f"{subclass}: Iteration number {i} and max is {max_files} ")
-                    break
+                if max_files > 1:
+                    if i == int(max_files):
+                        print(f"{subclass}: Iteration number {i} and max is {int(max_files)} ")
+                        break
+                else:
+                    if i == int(self.subclass_hist_dict[subclass]*max_files):
+                        print(f"{subclass}: Iteration number {i} and max is {int(self.subclass_hist_dict[subclass]*max_files)} ")
+                        break
 
                 filename = re.search('([^[\/]*$)',npy_file).group(0)
                 [plate_quality,chi_sq,subclass,id,copy_num,filetype] = filename_data(filename)
-
-                if not (range_copy_num[0] <= copy_num <= range_copy_num[1]):
-                    continue
 
                 if (subclass not in inclusion_list) and (not (min_chisq<chi_sq<max_chisq) or (plate_quality not in plate_quality_choice)):
                     print(f"{subclass}: Omitted : X^2 is {chi_sq:.2f} but " +
                           f"X^2 range is {min_chisq}:{max_chisq} or PQ is {plate_quality} but not in {plate_quality_choice}")
                     continue
 
-                flux_array = np.load(npy_file)
-                processed_flux = flux_pprocessing(flux_array,method=pp_method)
-                flux_values.append(processed_flux[loglam[0]:loglam[1]])
+                flux_copies =[]
+                for k in range(copies):
+                    filename_k = re.sub('_0.npy',f'_{k}.npy',filename)
+                    [plate_quality,chi_sq,subclass,id,copy_num,filetype] = filename_data(filename_k)
+                    try:
+                        flux_array = np.load(f"{self.folder}/{subclass}/{filename_k}")
+                    except:
+                        #print(f"{self.folder}/{subclass}/{filename_k} doesn't exist")
+                        break
+                    processed_flux = flux_pprocessing(flux_array,method=pp_method)
+                    flux_copies.append(processed_flux[loglam[0]:loglam[1]])
+
+                flux_values.append(flux_copies)
                 subclass_list.append(subclass)
                 plate_ids_used.append(id)
-                copy_bool.append(bool(copy_num))
+                chi_sq_values.append(chi_sq)
                 i += 1
                 if overall_count%50 == 0 : print(f"Overall count is {overall_count}")
                 overall_count += 1
                 subclass_counter[subclass] += 1
 
-            matrix = [flux_values,subclass_list,copy_bool]
+            matrix = [flux_values,subclass_list,chi_sq_values]
         return [matrix,overall_count,subclass_counter,plate_ids_used]
 
 

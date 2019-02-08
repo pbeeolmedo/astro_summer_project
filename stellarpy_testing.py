@@ -44,23 +44,25 @@ plt.show()
 
 
 print(subclasses)
+
 #inclusion_list1 = [ s for s in subclasses if s.startswith('M')]
 
 #exclusion_list1 = [ s for s in subclasses if s.startswith('M') or s.startswith('A') or s.startswith('B')]
 #exclusion_list1 += ['CV','Carbon','WD','STARFORMING']
 
-subclass_list1 = [ s for s in subclasses if s.startswith('M')]
+subclass_list1 = [ s for s in subclasses if (s.startswith('F') or s.startswith('G'))]
 
 preproc_method = 'minus_median'
-[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,3000,min_chisq=0,max_chisq=3.65,exclusion_list=[''],\
+[matrix,overall_count,subclass_counter,plate_ids_used] = data.load_flux_matrix(2,2000,min_chisq=0,max_chisq=8.9,exclusion_list=[''],\
                                                     inclusion_list=[''],pp_method=preproc_method,subclasses=subclass_list1,\
-                                                    )
-print(matrix)
+                                                    copies = 2)
+
+
 print(subclass_counter)
 print(plate_ids_used)
 subclass_hist(subclass_counter,Star.all_subclasses,preproc_method,False,f"Data_Files/{overall_count}-{preproc_method}-Histogram")
 plt.show()
-write2pickle(matrix,f"Data_Files/{overall_count}-{preproc_method}.bin")
+write2pickle(matrix,f"Data_Files/{overall_count}_{preproc_method}.bin")
 
 
 '''

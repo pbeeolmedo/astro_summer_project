@@ -24,20 +24,26 @@ from itertools import product
 TEST_SPLIT=0.2
 
 #Open pickle file containing spectra flux values and matching subclasses
-with open ('Data_Files/14566-minus_median.bin', 'rb') as training_data_file:
+with open ('Data_Files/23558_minus_median.bin', 'rb') as training_data_file:
     training_data = pickle.load(training_data_file)
 
 #Create the flux and subclass label lists from the training data
-flux_values = training_data[0][:]
-subclasses = training_data[1]
+flux_values = []
+subclasses = []
+i = 0
+for stars in training_data[0][:][:]:
+  for flux in stars:
+    flux_values.append(flux)
+    subclasses.append(training_data[1][i])
+  i+=1
 
 copy_bool = training_data[2]
 #print("False:True:Len", copy_bool.count(False),copy_bool.count(True),len(copy_bool))
 
 X = np.array(flux_values)
 y = np.array(subclasses)
-	
-	
+
+
 #One hot encode the spectral class labels
 unique_labels = set(subclasses)
 encoder = LabelEncoder()
@@ -53,7 +59,7 @@ for y_class in y:
 		new_y.append(y_class)
 	else:
 		new_y.append('Other')
-	
+
 unique, counts = np.unique(y, return_counts=True)
 
 X_train=[]
@@ -67,7 +73,7 @@ for subclass in unique:
 	training_flux, X_testing, y_training_flux, y_testing = train_test_split(X[mask], y_encoded[mask], test_size=TEST_SPLIT, shuffle=True)
 	X_train.extend(training_flux)
 	y_train.extend(y_training_flux)
-	
+
 	X_val_flux, X_test_flux, y_val_flux, y_test_flux = train_test_split(X_testing, y_testing, test_size=TEST_SPLIT, shuffle=True)
 	X_val.extend(X_val_flux)
 	y_val.extend(y_val_flux)
@@ -194,7 +200,7 @@ def plot_confusion_matrix(cm, classes,
 
 
 plot_confusion_matrix(cm, classes=classes, normalize=False)
-plt.show()	
+plt.show()
 
 
 # lr=[0.005]
